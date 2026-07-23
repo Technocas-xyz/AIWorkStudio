@@ -1,0 +1,18 @@
+Artwork: WhatsApp Image 2026-07-20 at 8.12.13 PM.jpeg (1359x1600)
+
+=== GPT-5.5 (duration: 17.41s) ===
+Engine: gpt
+Type: photo (0.97)
+Style: realistic
+BG: solid
+Typography: {'has_text': False, 'text_blocks': 0, 'decorative_text': False, 'curved_text': False, 'editable': False, 'font_complexity': 'simple', 'small_text_risk': False, 'detected_text': ''}
+Colors: {'dominant_colors': ['black', 'silver', 'warm brown'], 'color_complexity': 'medium', 'is_monochrome': False, 'dominant_tone': 'dark'}
+Score: 65
+Quality: High-contrast photographic portrait with strong sparkle highlights and visible detail in the face, glove, and embellished clothing. Some areas of black hair and clothing merge into the background, but the central subject is clear and production-ready for photo-based use.
+
+=== PILLOW (duration: 0.09s) ===
+Engine: pillow
+Type: photo (0.6)
+Style: realistic
+BG: complex
+Score: 55
