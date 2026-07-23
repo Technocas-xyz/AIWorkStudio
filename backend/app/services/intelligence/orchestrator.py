@@ -128,10 +128,28 @@ class AnalysisOrchestrator:
             job.progress = 25
             await self.db.flush()
 
+            # Always run Pillow first to get technical data
+            pillow_analysis = self.visual_analyzer.analyze(file_bytes, extension, {"width": width, "height": height})
+
             if engine == "gpt" and self.gpt_visual_analyzer.is_available():
-                visual_analysis = self.gpt_visual_analyzer.analyze(file_bytes, extension, {"width": width, "height": height})
+                # Pass Pillow's technical findings to GPT for better-informed analysis
+                pillow_context = {
+                    "width": width,
+                    "height": height,
+                    "dpi": dpi,
+                    "has_alpha": has_alpha,
+                    "color_space": artwork.color_space,
+                    "extension": extension,
+                    "file_size": artwork.file_size,
+                    "pillow_color_analysis": pillow_analysis.get("color_analysis", {}),
+                    "pillow_background": pillow_analysis.get("background", {}),
+                    "pillow_composition": pillow_analysis.get("composition", {}),
+                    "pillow_artwork_type": pillow_analysis.get("artwork_type"),
+                    "pillow_artistic_style": pillow_analysis.get("artistic_style"),
+                }
+                visual_analysis = self.gpt_visual_analyzer.analyze(file_bytes, extension, pillow_context)
             else:
-                visual_analysis = self.visual_analyzer.analyze(file_bytes, extension, {"width": width, "height": height})
+                visual_analysis = pillow_analysis
 
             # Tag which engine was used
             visual_analysis["engine_used"] = engine if (engine == "gpt" and self.gpt_visual_analyzer.is_available()) else "pillow"

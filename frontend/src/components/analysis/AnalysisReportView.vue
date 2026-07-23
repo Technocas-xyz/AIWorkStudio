@@ -66,6 +66,102 @@ function severityColor(sev: string): string {
       </div>
     </div>
 
+    <!-- Pixel Geometry -->
+    <div class="card p-5">
+      <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-3">📏 Pixel Geometry</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Width</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ artwork.width }}px</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Height</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ artwork.height }}px</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Aspect Ratio</p>
+          <p class="text-sm font-bold text-primary-600">{{ report.geometry_analysis?.aspect_ratio?.current_ratio_display || '—' }}</p>
+          <p class="text-[9px] text-surface-500">{{ report.geometry_analysis?.aspect_ratio?.current_category }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Orientation</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ report.geometry_analysis?.aspect_ratio?.current_orientation || report.geometry_analysis?.aspect_ratio?.current_orientation || '—' }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">DPI</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ report.file_inspection?.dpi || '72' }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Color Space</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ report.file_inspection?.color_space || '—' }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Bit Depth</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ report.file_inspection?.bit_depth ? report.file_inspection.bit_depth + '-bit' : '—' }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Alpha Channel</p>
+          <p class="text-sm font-bold" :class="report.file_inspection?.has_alpha ? 'text-green-600' : 'text-red-500'">{{ report.file_inspection?.has_alpha ? 'Yes' : 'No' }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Transparency</p>
+          <p class="text-sm font-bold" :class="report.file_inspection?.has_transparency ? 'text-green-600' : 'text-surface-600'">{{ report.file_inspection?.has_transparency ? 'Yes' : 'No' }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">ICC Profile</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white capitalize">{{ report.file_inspection?.icc_profile || '—' }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Format</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ report.file_inspection?.file_format || artwork.extension?.toUpperCase() }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Compression</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white capitalize">{{ report.file_inspection?.compression || '—' }}</p>
+        </div>
+      </div>
+
+      <!-- Geometry Details -->
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mt-3 pt-3 border-t border-surface-200 dark:border-surface-700">
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Subject Coverage</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ report.geometry_analysis?.subject_coverage_pct?.toFixed(1) || '100' }}%</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Empty Space</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ report.geometry_analysis?.empty_space_pct?.toFixed(1) || '0' }}%</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Transparent Area</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ report.geometry_analysis?.transparent_area_pct?.toFixed(1) || '0' }}%</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Subject Centered</p>
+          <p class="text-sm font-bold" :class="report.geometry_analysis?.subject_centered ? 'text-green-600' : 'text-yellow-600'">{{ report.geometry_analysis?.subject_centered ? 'Yes' : 'No' }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Cropping Risk</p>
+          <p class="text-sm font-bold" :class="report.geometry_analysis?.cropping_risk ? 'text-red-500' : 'text-green-600'">{{ report.geometry_analysis?.cropping_risk ? 'Yes' : 'No' }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Safe Margins</p>
+          <p class="text-[10px] font-mono text-surface-700 dark:text-surface-300" v-if="report.geometry_analysis?.safe_margins">
+            T:{{ report.geometry_analysis.safe_margins.top }} R:{{ report.geometry_analysis.safe_margins.right }} B:{{ report.geometry_analysis.safe_margins.bottom }} L:{{ report.geometry_analysis.safe_margins.left }}
+          </p>
+          <p v-else class="text-sm text-surface-500">—</p>
+        </div>
+      </div>
+
+      <!-- Edge Contact -->
+      <div v-if="report.geometry_analysis?.edge_contact" class="flex items-center gap-3 mt-3 pt-3 border-t border-surface-200 dark:border-surface-700">
+        <span class="text-[10px] text-surface-500">Edge Contact:</span>
+        <span v-for="(val, side) in report.geometry_analysis.edge_contact" :key="side"
+          :class="['text-[10px] px-1.5 py-0.5 rounded font-medium', val ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400']">
+          {{ side }}: {{ val ? '⚠ Yes' : '✓ No' }}
+        </span>
+      </div>
+    </div>
+
     <!-- Decision Summary -->
     <div class="card p-5">
       <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-3">🧠 AI Decisions</h3>
@@ -237,10 +333,12 @@ function severityColor(sev: string): string {
     <div v-if="aspectRatio" class="card p-5">
       <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-1">📐 DTF Aspect Ratio Intelligence</h3>
       <div class="flex flex-wrap gap-4 text-xs text-surface-500 mb-4">
-        <span>Current: <span class="font-mono font-medium text-surface-800 dark:text-surface-200">{{ aspectRatio.current_ratio_display }}</span> · {{ aspectRatio.current_orientation }}</span>
+        <span>Dimensions: <span class="font-medium text-surface-800 dark:text-surface-200">{{ artwork.width }}×{{ artwork.height }}px</span></span>
+        <span>Aspect Ratio: <span class="font-mono font-bold text-surface-900 dark:text-white">{{ aspectRatio.current_ratio_display }}</span></span>
+        <span>Orientation: <span class="font-medium text-surface-800 dark:text-surface-200">{{ aspectRatio.current_orientation }}</span></span>
+        <span>Category: <span class="font-medium text-primary-600">{{ aspectRatio.current_category }}</span></span>
         <span>Max DTF: <span class="font-medium text-surface-800 dark:text-surface-200">{{ aspectRatio.max_dtf_area }}</span></span>
-        <span>Max Print @300dpi: <span class="font-medium text-surface-800 dark:text-surface-200">{{ aspectRatio.max_print_at_300dpi }}</span></span>
-        <span>Best: <span class="font-medium text-green-600">{{ aspectRatio.best_match }}</span></span>
+        <span>Max @300dpi: <span class="font-medium text-surface-800 dark:text-surface-200">{{ aspectRatio.max_print_at_300dpi }}</span></span>
       </div>
       <p class="text-xs italic text-surface-500 mb-3">{{ aspectRatio.summary }}</p>
 

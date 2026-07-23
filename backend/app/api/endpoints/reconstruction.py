@@ -200,6 +200,43 @@ async def approve_plan(
     return APIResponse(message="Plan approved - ready for AI Production")
 
 
+@router.get("/artwork/{artwork_id}/latest", response_model=APIResponse)
+async def get_latest_reconstruction_plan(
+    artwork_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get the latest reconstruction plan for an artwork."""
+    result = await db.execute(
+        select(ReconstructionPlan)
+        .where(ReconstructionPlan.artwork_id == artwork_id, ReconstructionPlan.is_deleted == False)
+        .order_by(ReconstructionPlan.created_at.desc())
+    )
+    plan = result.scalars().first()
+    if not plan:
+        return APIResponse(data=None, message="No reconstruction plan found")
+
+    operations = json.loads(plan.operations) if plan.operations else []
+    strategy = json.loads(plan.strategy_summary) if plan.strategy_summary else {}
+
+    return APIResponse(data={
+        "id": plan.id,
+        "artwork_id": plan.artwork_id,
+        "status": plan.status,
+        "operations": operations,
+        "strategy": strategy,
+        "ai_model_primary": plan.ai_model_primary,
+        "ai_model_fallback": plan.ai_model_fallback,
+        "target_dpi": plan.target_dpi,
+        "estimates": {
+            "time_seconds": plan.estimated_time_seconds,
+            "credits": plan.estimated_credits,
+            "quality_score": plan.estimated_quality_score,
+            "similarity": plan.estimated_similarity,
+        },
+    })
+
+
 def _build_operations(plan: dict, production: dict, risks: dict, artwork) -> list:
     """Build operation list from analysis results."""
     ops = []

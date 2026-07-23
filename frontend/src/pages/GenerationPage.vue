@@ -77,12 +77,24 @@ async function selectArtwork(artwork: ArtworkItem) {
     }
   } catch {}
 
-  // Load approved reconstruction plan
+  // Load existing reconstruction plan (don't create a new one)
   try {
-    const response = await api.post('/reconstruction/create', { artwork_id: artwork.id })
-    const plan = response.data.data
-    reconstructionPlan.value = plan
-  } catch {}
+    // First try to get existing plan from the API
+    const response = await api.get(`/reconstruction/artwork/${artwork.id}/latest`)
+    if (response.data.data) {
+      reconstructionPlan.value = response.data.data
+    } else {
+      // No existing plan — create a fresh one from analysis
+      const createResponse = await api.post('/reconstruction/create', { artwork_id: artwork.id })
+      reconstructionPlan.value = createResponse.data.data
+    }
+  } catch {
+    // Fallback: create new
+    try {
+      const createResponse = await api.post('/reconstruction/create', { artwork_id: artwork.id })
+      reconstructionPlan.value = createResponse.data.data
+    } catch {}
+  }
 
   // Load production plan if exists
   try {

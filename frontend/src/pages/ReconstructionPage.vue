@@ -45,6 +45,12 @@ async function createPlan() {
 
 async function toggleOperation(op: any) {
   op.enabled = !op.enabled
+  // Save updated operations to backend
+  if (plan.value?.id) {
+    try {
+      await api.put(`/reconstruction/${plan.value.id}`, { operations: plan.value.operations })
+    } catch {}
+  }
 }
 
 async function approvePlan() {

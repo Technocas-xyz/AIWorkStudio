@@ -2,6 +2,7 @@
 
 import math
 from typing import Optional
+from app.services.aspect_ratio_service import calculate_aspect_ratio, get_orientation
 
 
 # Common DTF production target aspect ratios (max print area: 20" x 28")
@@ -41,6 +42,9 @@ class AspectRatioAnalyzer:
         current_ratio = width / height
         current_ratio_str = self._ratio_to_string(width, height)
 
+        # Full aspect ratio info from centralized service
+        ar_info = calculate_aspect_ratio(width, height)
+
         # Calculate current max print size at 300 DPI
         max_print_w_300 = round(width / 300, 2)
         max_print_h_300 = round(height / 300, 2)
@@ -65,8 +69,9 @@ class AspectRatioAnalyzer:
 
         return {
             "current_ratio": round(current_ratio, 4),
-            "current_ratio_display": current_ratio_str,
-            "current_orientation": "landscape" if current_ratio > 1.05 else "portrait" if current_ratio < 0.95 else "square",
+            "current_ratio_display": ar_info["aspect_ratio"],
+            "current_orientation": ar_info["orientation"],
+            "current_category": ar_info["category"],
             "max_dtf_area": f"{MAX_PRINT_WIDTH}\" × {MAX_PRINT_HEIGHT}\"",
             "max_print_at_300dpi": f"{max_print_w_300}\" × {max_print_h_300}\"",
             "effective_max_print": f"{actual_max_w}\" × {actual_max_h}\"",
@@ -131,13 +136,13 @@ class AspectRatioAnalyzer:
             target_print_h = min(MAX_PRINT_HEIGHT, MAX_PRINT_WIDTH / target_ratio)
             target_print_w = target_print_h * target_ratio
 
-        target_print_w = min(target_print_w, MAX_PRINT_WIDTH)
-        target_print_h = min(target_print_h, MAX_PRINT_HEIGHT)
+        target_print_w = round(min(target_print_w, MAX_PRINT_WIDTH), 1)
+        target_print_h = round(min(target_print_h, MAX_PRINT_HEIGHT), 1)
 
         # Calculate required DPI for max print at this ratio
         required_dpi_w = width / target_print_w if target_print_w > 0 else 0
         required_dpi_h = height / target_print_h if target_print_h > 0 else 0
-        effective_dpi = min(required_dpi_w, required_dpi_h)
+        effective_dpi = round(min(required_dpi_w, required_dpi_h))
 
         # DPI quality assessment
         if effective_dpi >= 300:
@@ -177,7 +182,7 @@ class AspectRatioAnalyzer:
                 severity = "medium"
 
         if effective_dpi < 200:
-            risks.append(f"Only {effective_dpi:.0f} DPI at {target_print_w}\"×{target_print_h}\" - below minimum 200 DPI for DTF")
+            risks.append(f"Only {effective_dpi} DPI at {target_print_w}\"×{target_print_h}\" - below minimum 200 DPI for DTF")
             if severity == "low":
                 severity = "high" if effective_dpi < 150 else "medium"
 
@@ -213,7 +218,7 @@ class AspectRatioAnalyzer:
         return {
             "name": name,
             "target_ratio": target_ratio,
-            "max_print_size": f"{target_print_w:.1f}\" × {target_print_h:.1f}\"",
+            "max_print_size": f"{target_print_w}\" × {target_print_h}\"",
             "use_cases": use_cases,
             "status": status,
             "score": round(score),
@@ -223,7 +228,7 @@ class AspectRatioAnalyzer:
             "ratio_difference_pct": round(ratio_diff_pct, 1),
             "crop_loss_pct": round(crop_loss_pct, 1),
             "canvas_expand_pct": round(expand_pct, 1),
-            "effective_dpi": round(effective_dpi),
+            "effective_dpi": effective_dpi,
             "dpi_quality": dpi_quality,
             "risks": risks,
             "ai_expansion_needed": expand_pct > 5,
@@ -231,19 +236,9 @@ class AspectRatioAnalyzer:
         }
 
     def _ratio_to_string(self, width: int, height: int) -> str:
-        """Convert dimensions to a readable ratio string."""
-        gcd = math.gcd(width, height)
-        rw = width // gcd
-        rh = height // gcd
-        # Simplify if numbers are too large
-        if rw > 20 or rh > 20:
-            ratio = width / height
-            # Find closest common ratio
-            for target in TARGET_RATIOS:
-                if abs(ratio - target["ratio"]) < 0.05:
-                    return target["name"].split(" ")[0]
-            return f"{ratio:.2f}:1"
-        return f"{rw}:{rh}"
+        """Convert dimensions to a simplified ratio string using centralized service."""
+        result = calculate_aspect_ratio(width, height)
+        return result["aspect_ratio"]
 
     def _generate_summary(self, current_ratio: float, recommendations: list) -> str:
         """Generate a human-readable summary for DTF production."""

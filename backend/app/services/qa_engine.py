@@ -73,10 +73,11 @@ class QAEngine:
         if not artwork:
             return None
 
-        # Load the file to inspect (master if available, else original)
+        # Load the file to inspect: generated image (master or latest candidate)
         file_bytes = None
         original_bytes = None
 
+        # Try loading approved Master Artwork first
         if report.master_artwork_id:
             master_result = await self.db.execute(select(MasterArtwork).where(MasterArtwork.id == report.master_artwork_id))
             master = master_result.scalars().first()
@@ -86,13 +87,29 @@ class QAEngine:
                     with open(master_path, "rb") as f:
                         file_bytes = f.read()
 
-        # Load original
+        # If no master, try loading the latest generated candidate
+        if not file_bytes:
+            from app.models.generation import GenerationJob, CandidateArtwork
+            cand_result = await self.db.execute(
+                select(CandidateArtwork)
+                .join(GenerationJob, GenerationJob.id == CandidateArtwork.job_id)
+                .where(GenerationJob.artwork_id == report.artwork_id, CandidateArtwork.is_deleted == False)
+                .order_by(CandidateArtwork.created_at.desc())
+            )
+            latest_candidate = cand_result.scalars().first()
+            if latest_candidate:
+                cand_path = os.path.join(UPLOAD_DIR, latest_candidate.storage_path)
+                if os.path.exists(cand_path):
+                    with open(cand_path, "rb") as f:
+                        file_bytes = f.read()
+
+        # Load original artwork (for comparison)
         orig_path = os.path.join(UPLOAD_DIR, artwork.storage_bucket, artwork.storage_path)
         if os.path.exists(orig_path):
             with open(orig_path, "rb") as f:
                 original_bytes = f.read()
 
-        # Use original if no master
+        # If no generated image exists at all, inspect the original itself
         if not file_bytes:
             file_bytes = original_bytes
 
@@ -103,11 +120,22 @@ class QAEngine:
             await self.db.flush()
             return report
 
-        # Run all inspections
-        visual = self._visual_inspection(file_bytes, artwork)
-        print_insp = self._print_inspection(file_bytes, artwork)
-        similarity = self._similarity_validation(original_bytes, file_bytes) if original_bytes and file_bytes != original_bytes else {"overall": 100, "subject": 100, "color": 100, "layout": 100}
-        product_val = self._product_validation(artwork, print_insp)
+        # Run all inspections on the GENERATED image
+        # Get actual properties of the generated file (not from the original artwork record)
+        gen_width, gen_height, gen_has_alpha, gen_dpi = self._get_image_properties(file_bytes)
+
+        visual = self._visual_inspection(file_bytes, gen_width, gen_height, gen_has_alpha)
+        print_insp = self._print_inspection(file_bytes, gen_width, gen_height, gen_dpi, gen_has_alpha)
+
+        # Similarity: compare generated image against original
+        is_generated_different = (file_bytes != original_bytes) if original_bytes else False
+        if is_generated_different and original_bytes:
+            similarity = self._similarity_validation(original_bytes, file_bytes)
+        else:
+            # No generated image found — skip similarity (inspecting original itself)
+            similarity = {"overall": 0, "subject": 0, "color": 0, "layout": 0, "composition": 0, "note": "No generated image to compare — run AI Production first"}
+
+        product_val = self._product_validation(gen_width, gen_height, gen_has_alpha, gen_dpi)
 
         # Collect all issues
         all_issues = []
@@ -183,7 +211,22 @@ class QAEngine:
         await self.db.flush()
         return True
 
-    def _visual_inspection(self, file_bytes: bytes, artwork) -> dict:
+    def _get_image_properties(self, file_bytes: bytes) -> tuple:
+        """Extract actual width, height, has_alpha, dpi from image bytes."""
+        try:
+            from PIL import Image
+            img = Image.open(io.BytesIO(file_bytes))
+            width = img.width
+            height = img.height
+            has_alpha = img.mode in ("RGBA", "LA", "PA")
+            dpi_info = img.info.get("dpi")
+            dpi = int(dpi_info[0]) if dpi_info and isinstance(dpi_info, tuple) else 72
+            img.close()
+            return (width, height, has_alpha, dpi)
+        except Exception:
+            return (0, 0, False, 72)
+
+    def _visual_inspection(self, file_bytes: bytes, width: int, height: int, has_alpha: bool) -> dict:
         """Comprehensive visual quality inspection."""
         result = {"score": 100, "checks": [], "issues": []}
         try:
@@ -257,15 +300,12 @@ class QAEngine:
         result["score"] = max(0, result["score"])
         return result
 
-    def _print_inspection(self, file_bytes: bytes, artwork) -> dict:
-        """Print readiness validation."""
+    def _print_inspection(self, file_bytes: bytes, width: int, height: int, dpi: int, has_alpha: bool) -> dict:
+        """Print readiness validation of the generated image."""
         result = {"score": 100, "checks": [], "issues": []}
         try:
             from PIL import Image
             img = Image.open(io.BytesIO(file_bytes))
-
-            dpi = artwork.resolution_dpi or 72
-            width, height = img.width, img.height
 
             # DPI check
             dpi_pass = dpi >= 200
@@ -297,8 +337,8 @@ class QAEngine:
             print_h = height / 300
             result["checks"].append({"name": "Print Size @300dpi", "pass": True, "value": f"{print_w:.1f}\" × {print_h:.1f}\""})
 
-            # Safe margins (check if content touches edges)
-            if img.mode == "RGBA":
+            # Safe margins
+            if has_alpha and img.mode == "RGBA":
                 alpha = img.split()[3]
                 bbox = alpha.getbbox()
                 if bbox:
@@ -311,6 +351,12 @@ class QAEngine:
                     if not margin_pass:
                         result["issues"].append({"title": "Tight Margins", "severity": "low", "description": "Subject very close to edge", "recommendation": "Consider canvas expansion"})
                         result["score"] -= 3
+
+            # Transparency check
+            result["checks"].append({"name": "Has Transparency", "pass": has_alpha, "value": "Yes" if has_alpha else "No"})
+            if not has_alpha:
+                result["issues"].append({"title": "No Transparency", "severity": "high", "description": "Generated image has no alpha channel", "recommendation": "Enable background removal"})
+                result["score"] -= 10
 
             img.close()
         except Exception as e:
@@ -352,22 +398,18 @@ class QAEngine:
         except Exception:
             return {"overall": 100, "subject": 100, "color": 100, "layout": 100, "composition": 100}
 
-    def _product_validation(self, artwork, print_insp: dict) -> dict:
-        """Validate against DTF product rules."""
+    def _product_validation(self, width: int, height: int, has_alpha: bool, dpi: int) -> dict:
+        """Validate generated image against DTF product rules."""
         result = {"product": "DTF Transfer", "checks": [], "issues": [], "pass": True}
 
-        has_alpha = artwork.has_alpha_channel or False
         result["checks"].append({"name": "Transparent Background", "pass": has_alpha})
         if not has_alpha:
             result["issues"].append({"title": "No Transparency for DTF", "severity": "critical", "description": "DTF requires transparent background", "recommendation": "Apply background removal"})
             result["pass"] = False
 
-        dpi = artwork.resolution_dpi or 72
         result["checks"].append({"name": "DPI ≥ 200", "pass": dpi >= 200})
         result["checks"].append({"name": "DPI ≥ 300 (optimal)", "pass": dpi >= 300})
 
-        width = artwork.width or 0
-        height = artwork.height or 0
         size_ok = width >= 500 and height >= 500
         result["checks"].append({"name": "Minimum Dimensions", "pass": size_ok})
 

@@ -12,6 +12,7 @@ const qaReport = ref<any>(null)
 const isInspecting = ref(false)
 const showLightbox = ref(false)
 const approvalNotes = ref('')
+const generatedImageUrl = ref('')
 
 async function loadArtworks() {
   try { artworks.value = (await artworkService.list({ page_size: 100 })).items } catch {}
@@ -20,6 +21,22 @@ async function loadArtworks() {
 function selectArtwork(artwork: ArtworkItem) {
   selectedArtwork.value = artwork
   qaReport.value = null
+  generatedImageUrl.value = ''
+
+  // Load latest generated candidate image URL
+  api.get(`/generation/artwork/${artwork.id}/history`).then(response => {
+    const history = response.data.data
+    if (history?.candidates?.length > 0) {
+      generatedImageUrl.value = `/uploads/${history.candidates[0].storage_path}`
+    }
+  }).catch(() => {})
+
+  // Load existing QA report if one was already run
+  api.get(`/qa/artwork/${artwork.id}/latest`).then(response => {
+    if (response.data.data) {
+      qaReport.value = response.data.data
+    }
+  }).catch(() => {})
 }
 
 async function startInspection() {
@@ -120,6 +137,47 @@ onMounted(loadArtworks)
 
         <!-- QA Report -->
         <div v-if="qaReport" class="space-y-4">
+          <!-- Side-by-side: Original vs Generated -->
+          <div class="card p-4">
+            <p class="text-xs font-medium text-surface-500 uppercase mb-2">Similarity Comparison: Original vs Generated</p>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-[10px] text-center text-surface-500 mb-1 uppercase">Original</p>
+                <div @click="showLightbox = true" class="bg-surface-100 dark:bg-surface-800 rounded-lg overflow-hidden flex items-center justify-center cursor-zoom-in" style="height: 220px;">
+                  <img :src="artworkService.getPreviewUrl(selectedArtwork!, 'large')" class="max-h-[210px] object-contain" />
+                </div>
+              </div>
+              <div>
+                <p class="text-[10px] text-center text-surface-500 mb-1 uppercase">Generated (Inspected)</p>
+                <div class="bg-surface-100 dark:bg-surface-800 rounded-lg overflow-hidden flex items-center justify-center" style="height: 220px;">
+                  <img :src="generatedImageUrl" class="max-h-[210px] object-contain" v-if="generatedImageUrl" />
+                  <p v-else class="text-xs text-surface-400">No generated image</p>
+                </div>
+              </div>
+            </div>
+            <div v-if="qaReport.similarity_validation && !qaReport.similarity_validation.note" class="grid grid-cols-4 gap-2 mt-3">
+              <div class="text-center p-2 bg-surface-50 dark:bg-surface-800 rounded">
+                <p class="text-[9px] text-surface-500">Subject</p>
+                <p class="text-sm font-bold" :class="scoreColor(qaReport.similarity_validation.subject)">{{ Math.round(qaReport.similarity_validation.subject) }}%</p>
+              </div>
+              <div class="text-center p-2 bg-surface-50 dark:bg-surface-800 rounded">
+                <p class="text-[9px] text-surface-500">Color</p>
+                <p class="text-sm font-bold" :class="scoreColor(qaReport.similarity_validation.color)">{{ Math.round(qaReport.similarity_validation.color) }}%</p>
+              </div>
+              <div class="text-center p-2 bg-surface-50 dark:bg-surface-800 rounded">
+                <p class="text-[9px] text-surface-500">Layout</p>
+                <p class="text-sm font-bold" :class="scoreColor(qaReport.similarity_validation.layout)">{{ Math.round(qaReport.similarity_validation.layout) }}%</p>
+              </div>
+              <div class="text-center p-2 bg-surface-50 dark:bg-surface-800 rounded">
+                <p class="text-[9px] text-surface-500">Overall</p>
+                <p class="text-sm font-bold" :class="scoreColor(qaReport.similarity_validation.overall)">{{ Math.round(qaReport.similarity_validation.overall) }}%</p>
+              </div>
+            </div>
+            <div v-else-if="qaReport.similarity_validation?.note" class="mt-3 p-3 bg-yellow-50 dark:bg-yellow-900/10 rounded-lg border border-yellow-200 dark:border-yellow-800">
+              <p class="text-xs text-yellow-700 dark:text-yellow-400">⚠ {{ qaReport.similarity_validation.note }}</p>
+            </div>
+          </div>
+
           <!-- Score Summary -->
           <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
             <div class="card p-3 text-center">

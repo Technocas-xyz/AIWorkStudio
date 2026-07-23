@@ -111,6 +111,24 @@ async def send_back(
     return APIResponse(message=f"Sent back to {target.replace('_', ' ').title()}")
 
 
+@router.get("/artwork/{artwork_id}/latest", response_model=APIResponse)
+async def get_latest_qa_report(
+    artwork_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Get the latest QA report for an artwork."""
+    result = await db.execute(
+        select(QAReport)
+        .where(QAReport.artwork_id == artwork_id, QAReport.is_deleted == False)
+        .order_by(QAReport.version.desc())
+    )
+    report = result.scalars().first()
+    if not report:
+        return APIResponse(data=None, message="No QA report found")
+    return APIResponse(data=_report_to_dict(report))
+
+
 def _report_to_dict(report: QAReport) -> dict:
     return {
         "id": report.id,

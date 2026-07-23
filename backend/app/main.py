@@ -24,6 +24,12 @@ limiter = Limiter(key_func=get_remote_address)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application startup and shutdown."""
+    # Auto-seed database on first run
+    try:
+        _auto_seed_database()
+    except Exception as e:
+        print(f"Auto-seed: {e}")
+
     # Only initialize MinIO in Docker mode
     if os.environ.get("APP_ENV") != "local":
         try:
@@ -37,6 +43,115 @@ async def lifespan(app: FastAPI):
 
     # Shutdown
     await engine.dispose()
+
+
+def _auto_seed_database():
+    """Create tables and seed default data if not already present."""
+    import uuid
+    from datetime import datetime, timezone
+    from sqlalchemy import create_engine, inspect
+    from sqlalchemy.orm import Session
+    from app.database.base import Base
+    from app.config import get_settings
+
+    settings = get_settings()
+    db_url = settings.database_url_sync if hasattr(settings, 'database_url_sync') else settings.database_url.replace('+aiosqlite', '').replace('+asyncpg', '+psycopg2')
+
+    sync_engine = create_engine(db_url, echo=False)
+
+    # Create all tables
+    Base.metadata.create_all(sync_engine)
+
+    # Check if already seeded
+    from app.models.role import Role
+    with Session(sync_engine) as session:
+        existing = session.query(Role).filter(Role.name == "super_admin").first()
+        if existing:
+            return  # Already seeded
+
+    # Seed
+    import bcrypt
+    from app.models.user import User
+    from app.models.role import Role
+    from app.models.permission import Permission
+    from app.models.role_permission import RolePermission
+
+    now = datetime.now(timezone.utc)
+
+    ROLES = [
+        {"name": "super_admin", "display_name": "Super Administrator", "description": "Full system access"},
+        {"name": "production_manager", "display_name": "Production Manager", "description": "Manages production workflows"},
+        {"name": "designer", "display_name": "Designer", "description": "Creates and edits artwork"},
+        {"name": "qa_officer", "display_name": "QA Officer", "description": "Reviews and approves quality"},
+        {"name": "operator", "display_name": "Operator", "description": "Operates production tasks"},
+        {"name": "viewer", "display_name": "Viewer", "description": "Read-only access"},
+    ]
+
+    PERMISSIONS = [
+        {"code": "Artwork.Create", "name": "Create Artwork", "module": "artwork"},
+        {"code": "Artwork.Read", "name": "View Artwork", "module": "artwork"},
+        {"code": "Artwork.Update", "name": "Edit Artwork", "module": "artwork"},
+        {"code": "Artwork.Delete", "name": "Delete Artwork", "module": "artwork"},
+        {"code": "Artwork.Generate", "name": "Generate Artwork", "module": "artwork"},
+        {"code": "Artwork.Export", "name": "Export Artwork", "module": "artwork"},
+        {"code": "Project.Create", "name": "Create Project", "module": "project"},
+        {"code": "Project.Read", "name": "View Project", "module": "project"},
+        {"code": "Project.Update", "name": "Edit Project", "module": "project"},
+        {"code": "Project.Delete", "name": "Delete Project", "module": "project"},
+        {"code": "Project.Archive", "name": "Archive Project", "module": "project"},
+        {"code": "QA.Review", "name": "Review Quality", "module": "qa"},
+        {"code": "QA.Approve", "name": "Approve Quality", "module": "qa"},
+        {"code": "QA.Reject", "name": "Reject Quality", "module": "qa"},
+        {"code": "Settings.Manage", "name": "Manage Settings", "module": "settings"},
+        {"code": "Settings.View", "name": "View Settings", "module": "settings"},
+        {"code": "Users.Create", "name": "Create Users", "module": "users"},
+        {"code": "Users.Read", "name": "View Users", "module": "users"},
+        {"code": "Users.Update", "name": "Edit Users", "module": "users"},
+        {"code": "Users.Delete", "name": "Delete Users", "module": "users"},
+        {"code": "Storage.Upload", "name": "Upload Files", "module": "storage"},
+        {"code": "Storage.Download", "name": "Download Files", "module": "storage"},
+        {"code": "Storage.Delete", "name": "Delete Files", "module": "storage"},
+    ]
+
+    with Session(sync_engine) as session:
+        role_map = {}
+        for r in ROLES:
+            role = Role(id=str(uuid.uuid4()), name=r["name"], display_name=r["display_name"], description=r["description"], created_at=now, updated_at=now)
+            session.add(role)
+            role_map[r["name"]] = role
+        session.flush()
+
+        perm_map = {}
+        for p in PERMISSIONS:
+            perm = Permission(id=str(uuid.uuid4()), code=p["code"], name=p["name"], module=p["module"], created_at=now, updated_at=now)
+            session.add(perm)
+            perm_map[p["code"]] = perm
+        session.flush()
+
+        # Give super_admin all permissions
+        admin_role = role_map["super_admin"]
+        for code, perm in perm_map.items():
+            rp = RolePermission(id=str(uuid.uuid4()), role_id=admin_role.id, permission_id=perm.id, created_at=now, updated_at=now)
+            session.add(rp)
+        session.flush()
+
+        # Create admin user
+        admin = User(
+            id=str(uuid.uuid4()),
+            email="admin@aiworkstudio.com",
+            username="admin",
+            hashed_password=bcrypt.hashpw("Admin@123456".encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
+            first_name="System",
+            last_name="Administrator",
+            is_active=True,
+            is_verified=True,
+            role_id=admin_role.id,
+            created_at=now,
+            updated_at=now,
+        )
+        session.add(admin)
+        session.commit()
+        print("✓ Database auto-seeded: admin@aiworkstudio.com / Admin@123456")
 
 
 app = FastAPI(
