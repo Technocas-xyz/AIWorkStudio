@@ -55,9 +55,20 @@ def _auto_seed_database():
     from app.config import get_settings
 
     settings = get_settings()
-    db_url = settings.database_url_sync if hasattr(settings, 'database_url_sync') else settings.database_url.replace('+aiosqlite', '').replace('+asyncpg', '+psycopg2')
+
+    # Build sync database URL
+    if hasattr(settings, 'database_url_sync'):
+        db_url = settings.database_url_sync
+    elif 'sqlite' in getattr(settings, 'database_url', ''):
+        db_url = settings.database_url.replace('+aiosqlite', '')
+    else:
+        # PostgreSQL async -> sync
+        db_url = f"postgresql+psycopg2://{settings.postgres_user}:{settings.postgres_password}@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}"
 
     sync_engine = create_engine(db_url, echo=False)
+
+    # Import all models so metadata knows about them
+    from app.models import *  # noqa
 
     # Create all tables
     Base.metadata.create_all(sync_engine)

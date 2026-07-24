@@ -8,6 +8,9 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     curl \
     postgresql-client \
+    libjpeg-dev \
+    zlib1g-dev \
+    libfreetype6-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
@@ -16,6 +19,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
+
+# Create upload directories
+RUN mkdir -p app/uploads/originals app/uploads/previews app/uploads/versions app/uploads/generations
 
 # Make scripts executable
 RUN chmod +x scripts/start.sh
