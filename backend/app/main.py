@@ -68,7 +68,7 @@ def _auto_seed_database():
     sync_engine = create_engine(db_url, echo=False)
 
     # Import all models so metadata knows about them
-    from app.models import *  # noqa
+    import app.models  # noqa - triggers all model imports
 
     # Create all tables
     Base.metadata.create_all(sync_engine)
