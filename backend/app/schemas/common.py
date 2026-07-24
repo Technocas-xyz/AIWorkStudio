@@ -1,4 +1,4 @@
-"""Common schemas for API responses."""
+﻿"""Common schemas for API responses."""
 
 from typing import Any, Generic, TypeVar, Optional
 from pydantic import BaseModel, Field

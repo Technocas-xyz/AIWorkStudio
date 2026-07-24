@@ -1,4 +1,4 @@
-"""Authentication service."""
+﻿"""Authentication service."""
 
 import json
 import bcrypt

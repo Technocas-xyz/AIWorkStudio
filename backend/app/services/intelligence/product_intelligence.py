@@ -1,4 +1,4 @@
-"""Product Intelligence Engine - evaluates product compatibility."""
+﻿"""Product Intelligence Engine - evaluates product compatibility."""
 
 
 class ProductIntelligence:

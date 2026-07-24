@@ -1,4 +1,4 @@
-"""Aspect Ratio Intelligence - analyzes current ratio and recommends target ratios with risk."""
+﻿"""Aspect Ratio Intelligence - analyzes current ratio and recommends target ratios with risk."""
 
 import math
 from typing import Optional
@@ -72,9 +72,9 @@ class AspectRatioAnalyzer:
             "current_ratio_display": ar_info["aspect_ratio"],
             "current_orientation": ar_info["orientation"],
             "current_category": ar_info["category"],
-            "max_dtf_area": f"{MAX_PRINT_WIDTH}\" × {MAX_PRINT_HEIGHT}\"",
-            "max_print_at_300dpi": f"{max_print_w_300}\" × {max_print_h_300}\"",
-            "effective_max_print": f"{actual_max_w}\" × {actual_max_h}\"",
+            "max_dtf_area": f"{MAX_PRINT_WIDTH}\" Ã— {MAX_PRINT_HEIGHT}\"",
+            "max_print_at_300dpi": f"{max_print_w_300}\" Ã— {max_print_h_300}\"",
+            "effective_max_print": f"{actual_max_w}\" Ã— {actual_max_h}\"",
             "best_match": best["name"] if best else None,
             "best_match_score": best["score"] if best else 0,
             "best_print_size": best["max_print_size"] if best else None,
@@ -182,7 +182,7 @@ class AspectRatioAnalyzer:
                 severity = "medium"
 
         if effective_dpi < 200:
-            risks.append(f"Only {effective_dpi} DPI at {target_print_w}\"×{target_print_h}\" - below minimum 200 DPI for DTF")
+            risks.append(f"Only {effective_dpi} DPI at {target_print_w}\"Ã—{target_print_h}\" - below minimum 200 DPI for DTF")
             if severity == "low":
                 severity = "high" if effective_dpi < 150 else "medium"
 
@@ -218,7 +218,7 @@ class AspectRatioAnalyzer:
         return {
             "name": name,
             "target_ratio": target_ratio,
-            "max_print_size": f"{target_print_w}\" × {target_print_h}\"",
+            "max_print_size": f"{target_print_w}\" Ã— {target_print_h}\"",
             "use_cases": use_cases,
             "status": status,
             "score": round(score),
@@ -246,7 +246,7 @@ class AspectRatioAnalyzer:
         possible = [r for r in recommendations if r["status"] == "possible"]
 
         if len(recommended) >= 5:
-            return f"Versatile for DTF - fits {len(recommended)} standard sizes. Max print area: {MAX_PRINT_WIDTH}\"×{MAX_PRINT_HEIGHT}\"."
+            return f"Versatile for DTF - fits {len(recommended)} standard sizes. Max print area: {MAX_PRINT_WIDTH}\"Ã—{MAX_PRINT_HEIGHT}\"."
         elif len(recommended) >= 3:
             names = ", ".join(r["name"] for r in recommended[:3])
             return f"Good DTF flexibility. Best fits: {names}."

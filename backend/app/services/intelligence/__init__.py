@@ -1,1 +1,1 @@
-"""Artwork Intelligence Engine - modular analysis services."""
+﻿"""Artwork Intelligence Engine - modular analysis services."""

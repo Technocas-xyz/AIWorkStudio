@@ -1,4 +1,4 @@
-"""Image Quality Analyzer - detects halftone, blackout, noise, banding, and other print quality issues."""
+﻿"""Image Quality Analyzer - detects halftone, blackout, noise, banding, and other print quality issues."""
 
 import io
 import math
@@ -446,7 +446,7 @@ class ImageQualityAnalyzer:
             issues.append({"title": "Whiteout Areas", "detail": f"{result['whiteout']['areas_pct']}% of image is solid white - wasted film if not transparent", "severity": result["whiteout"]["severity"]})
 
         if result["halftone"]["detected"]:
-            issues.append({"title": "Halftone Pattern", "detail": f"Dot pattern detected ({result['halftone']['confidence']:.0%} confidence) - likely scanned from print. Will produce moiré on DTF.", "severity": result["halftone"]["severity"]})
+            issues.append({"title": "Halftone Pattern", "detail": f"Dot pattern detected ({result['halftone']['confidence']:.0%} confidence) - likely scanned from print. Will produce moirÃ© on DTF.", "severity": result["halftone"]["severity"]})
 
         if result["noise"]["detected"]:
             issues.append({"title": f"Image Noise ({result['noise']['level'].capitalize()})", "detail": f"Noise level: {result['noise'].get('noise_value', 0)} - will appear as grain/specks when printed", "severity": result["noise"]["severity"]})

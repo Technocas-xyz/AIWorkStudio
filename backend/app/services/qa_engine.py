@@ -1,4 +1,4 @@
-"""Quality Assurance Engine - comprehensive inspection of Master Artwork."""
+﻿"""Quality Assurance Engine - comprehensive inspection of Master Artwork."""
 
 import io
 import json
@@ -52,8 +52,8 @@ class QAEngine:
             version=version,
             status="inspecting",
             requested_by_id=user_id,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         self.db.add(report)
         await self.db.flush()
@@ -132,8 +132,8 @@ class QAEngine:
         if is_generated_different and original_bytes:
             similarity = self._similarity_validation(original_bytes, file_bytes)
         else:
-            # No generated image found — skip similarity (inspecting original itself)
-            similarity = {"overall": 0, "subject": 0, "color": 0, "layout": 0, "composition": 0, "note": "No generated image to compare — run AI Production first"}
+            # No generated image found â€” skip similarity (inspecting original itself)
+            similarity = {"overall": 0, "subject": 0, "color": 0, "layout": 0, "composition": 0, "note": "No generated image to compare â€” run AI Production first"}
 
         product_val = self._product_validation(gen_width, gen_height, gen_has_alpha, gen_dpi)
 
@@ -182,7 +182,7 @@ class QAEngine:
             return False
         report.status = "approved"
         report.reviewer_id = user_id
-        report.reviewed_at = datetime.now(timezone.utc)
+        report.reviewed_at = datetime.utcnow()
         report.approval_notes = notes
         await self.db.flush()
         return True
@@ -194,7 +194,7 @@ class QAEngine:
             return False
         report.status = "rejected"
         report.reviewer_id = user_id
-        report.reviewed_at = datetime.now(timezone.utc)
+        report.reviewed_at = datetime.utcnow()
         report.approval_notes = notes
         await self.db.flush()
         return True
@@ -206,7 +206,7 @@ class QAEngine:
             return False
         report.status = "sent_back"
         report.reviewer_id = user_id
-        report.reviewed_at = datetime.now(timezone.utc)
+        report.reviewed_at = datetime.utcnow()
         report.approval_notes = f"[Sent to {target}] {notes}"
         await self.db.flush()
         return True
@@ -321,9 +321,9 @@ class QAEngine:
 
             # Resolution
             res_pass = width >= 1000 and height >= 1000
-            result["checks"].append({"name": "Minimum Resolution", "pass": res_pass, "value": f"{width}×{height}"})
+            result["checks"].append({"name": "Minimum Resolution", "pass": res_pass, "value": f"{width}Ã—{height}"})
             if not res_pass:
-                result["issues"].append({"title": "Low Resolution", "severity": "high", "description": f"{width}×{height} may be too small for production", "recommendation": "Apply super resolution"})
+                result["issues"].append({"title": "Low Resolution", "severity": "high", "description": f"{width}Ã—{height} may be too small for production", "recommendation": "Apply super resolution"})
                 result["score"] -= 15
 
             # Bit depth
@@ -335,7 +335,7 @@ class QAEngine:
             # Print size at 300 DPI
             print_w = width / 300
             print_h = height / 300
-            result["checks"].append({"name": "Print Size @300dpi", "pass": True, "value": f"{print_w:.1f}\" × {print_h:.1f}\""})
+            result["checks"].append({"name": "Print Size @300dpi", "pass": True, "value": f"{print_w:.1f}\" Ã— {print_h:.1f}\""})
 
             # Safe margins
             if has_alpha and img.mode == "RGBA":
@@ -407,8 +407,8 @@ class QAEngine:
             result["issues"].append({"title": "No Transparency for DTF", "severity": "critical", "description": "DTF requires transparent background", "recommendation": "Apply background removal"})
             result["pass"] = False
 
-        result["checks"].append({"name": "DPI ≥ 200", "pass": dpi >= 200})
-        result["checks"].append({"name": "DPI ≥ 300 (optimal)", "pass": dpi >= 300})
+        result["checks"].append({"name": "DPI â‰¥ 200", "pass": dpi >= 200})
+        result["checks"].append({"name": "DPI â‰¥ 300 (optimal)", "pass": dpi >= 300})
 
         size_ok = width >= 500 and height >= 500
         result["checks"].append({"name": "Minimum Dimensions", "pass": size_ok})

@@ -1,4 +1,4 @@
-"""Model Registry - plugin architecture for AI model providers."""
+﻿"""Model Registry - plugin architecture for AI model providers."""
 
 import os
 from typing import Optional

@@ -1,4 +1,4 @@
-"""Similarity Validator - compares generated artwork with original."""
+﻿"""Similarity Validator - compares generated artwork with original."""
 
 import io
 import math

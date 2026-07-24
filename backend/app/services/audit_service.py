@@ -1,4 +1,4 @@
-"""Audit logging service."""
+﻿"""Audit logging service."""
 
 import json
 from typing import Optional

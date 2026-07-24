@@ -1,4 +1,4 @@
-"""Artwork metadata - extensible key-value metadata storage."""
+﻿"""Artwork metadata - extensible key-value metadata storage."""
 
 from sqlalchemy import Column, String, Text, ForeignKey
 from sqlalchemy.orm import relationship

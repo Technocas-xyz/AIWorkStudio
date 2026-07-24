@@ -1,4 +1,4 @@
-"""Artwork activity log model."""
+﻿"""Artwork activity log model."""
 
 from sqlalchemy import Column, String, Text, ForeignKey
 from sqlalchemy.orm import relationship

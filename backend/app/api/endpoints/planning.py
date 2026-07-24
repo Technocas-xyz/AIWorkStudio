@@ -1,4 +1,4 @@
-"""Production Planning Workspace API."""
+﻿"""Production Planning Workspace API."""
 
 import json
 import uuid
@@ -84,11 +84,11 @@ async def create_production_plan(
 
     # Specifications
     specs = {
-        "source_dimensions": f"{artwork.width}×{artwork.height}px",
+        "source_dimensions": f"{artwork.width}Ã—{artwork.height}px",
         "source_dpi": dpi,
         "target_dpi": 300,
-        "print_area": f"{print_width}\" × {print_height}\"",
-        "max_product_area": f"{product['max_width']}\" × {product['max_height']}\"",
+        "print_area": f"{print_width}\" Ã— {print_height}\"",
+        "max_product_area": f"{product['max_width']}\" Ã— {product['max_height']}\"",
         "color_profile": "sRGB",
         "output_format": "PNG",
         "transparent_bg": product["requires_transparency"],
@@ -114,8 +114,8 @@ async def create_production_plan(
         warnings=json.dumps(warnings),
         specifications=json.dumps(specs),
         created_by_id=current_user.id,
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow(),
     )
     db.add(plan)
     await db.flush()
@@ -252,7 +252,7 @@ def _validate_plan(artwork, product: dict, print_w: float, print_h: float, dpi: 
 
     # Size
     if print_w > product["max_width"] or print_h > product["max_height"]:
-        warnings.append({"severity": "high", "message": f"Print size exceeds product maximum ({product['max_width']}\"×{product['max_height']}\")"})
+        warnings.append({"severity": "high", "message": f"Print size exceeds product maximum ({product['max_width']}\"Ã—{product['max_height']}\")"})
 
     # Small size
     if print_w < 2 and print_h < 2:

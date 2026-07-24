@@ -1,4 +1,4 @@
-"""SystemSetting model."""
+﻿"""SystemSetting model."""
 
 from sqlalchemy import Column, String, Text
 from app.models.base import BaseModel

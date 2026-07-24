@@ -1,4 +1,4 @@
-"""Geometry Engine - spatial analysis using image properties."""
+﻿"""Geometry Engine - spatial analysis using image properties."""
 
 import io
 from typing import Optional

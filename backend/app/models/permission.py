@@ -1,4 +1,4 @@
-"""Permission model."""
+﻿"""Permission model."""
 
 from sqlalchemy import Column, String, Text
 from sqlalchemy.orm import relationship

@@ -1,4 +1,4 @@
-"""Collection endpoints."""
+﻿"""Collection endpoints."""
 
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Request

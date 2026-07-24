@@ -1,4 +1,4 @@
-"""User management endpoints."""
+﻿"""User management endpoints."""
 
 from typing import Optional
 

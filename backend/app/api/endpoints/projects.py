@@ -1,4 +1,4 @@
-"""Project endpoints."""
+﻿"""Project endpoints."""
 
 from typing import Optional
 

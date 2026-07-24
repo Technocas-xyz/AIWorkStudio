@@ -1,4 +1,4 @@
-"""Generation Plan Builder - produces the final structured JSON for Module 4."""
+﻿"""Generation Plan Builder - produces the final structured JSON for Module 4."""
 
 from datetime import datetime, timezone
 
@@ -41,7 +41,7 @@ class PlanBuilder:
         plan = {
             "analysis_id": analysis_id,
             "artwork_id": artwork_id,
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.utcnow().isoformat(),
             "version": "1.0",
 
             # Model recommendation

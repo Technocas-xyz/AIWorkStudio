@@ -1,4 +1,4 @@
-"""Artwork model - core DAM entity."""
+﻿"""Artwork model - core DAM entity."""
 
 import uuid
 from datetime import datetime

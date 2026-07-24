@@ -1,4 +1,4 @@
-"""Analysis Orchestrator - coordinates all intelligence engines."""
+﻿"""Analysis Orchestrator - coordinates all intelligence engines."""
 
 import json
 import os
@@ -72,8 +72,8 @@ class AnalysisOrchestrator:
             progress=0,
             requested_by_id=user_id,
             version=version,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         self.db.add(job)
         await self.db.flush()
@@ -102,7 +102,7 @@ class AnalysisOrchestrator:
 
         # Update status
         job.status = "processing"
-        job.started_at = datetime.now(timezone.utc)
+        job.started_at = datetime.utcnow()
         await self.db.flush()
 
         try:
@@ -254,8 +254,8 @@ class AnalysisOrchestrator:
                 generation_plan=json.dumps(generation_plan),
                 overall_score=generation_plan.get("overall_score"),
                 risk_level=risk_assessment.get("risk_level"),
-                created_at=datetime.now(timezone.utc),
-                updated_at=datetime.now(timezone.utc),
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow(),
             )
             self.db.add(report)
 
@@ -263,7 +263,7 @@ class AnalysisOrchestrator:
             job.status = "completed"
             job.current_step = "completed"
             job.progress = 100
-            job.completed_at = datetime.now(timezone.utc)
+            job.completed_at = datetime.utcnow()
             if job.started_at:
                 job.duration_seconds = (job.completed_at - job.started_at).total_seconds()
 

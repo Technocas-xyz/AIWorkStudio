@@ -1,4 +1,4 @@
-"""GPT Vision Analyzer - uses OpenAI GPT-5.5 Vision for semantic artwork understanding."""
+﻿"""GPT Vision Analyzer - uses OpenAI GPT-5.5 Vision for semantic artwork understanding."""
 
 import base64
 import io
@@ -47,7 +47,7 @@ class GPTVisualAnalyzer:
         if metadata:
             tech_lines = ["TECHNICAL DATA (from pixel analysis):"]
             if metadata.get("width"):
-                tech_lines.append(f"- Dimensions: {metadata.get('width')}×{metadata.get('height')}px")
+                tech_lines.append(f"- Dimensions: {metadata.get('width')}Ã—{metadata.get('height')}px")
             if metadata.get("dpi"):
                 tech_lines.append(f"- DPI: {metadata.get('dpi')}")
             if metadata.get("has_alpha") is not None:

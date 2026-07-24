@@ -1,4 +1,4 @@
-"""Dashboard endpoints."""
+﻿"""Dashboard endpoints."""
 
 import json
 from fastapi import APIRouter, Depends

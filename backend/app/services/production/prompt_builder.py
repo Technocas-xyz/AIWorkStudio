@@ -1,4 +1,4 @@
-"""Prompt Builder - converts Generation Plan JSON into model-specific prompts."""
+﻿"""Prompt Builder - converts Generation Plan JSON into model-specific prompts."""
 
 
 class PromptBuilder:

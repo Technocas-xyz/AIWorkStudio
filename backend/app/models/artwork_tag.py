@@ -1,4 +1,4 @@
-"""Artwork-Tag junction model."""
+﻿"""Artwork-Tag junction model."""
 
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship

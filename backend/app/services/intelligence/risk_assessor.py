@@ -1,4 +1,4 @@
-"""Risk Assessment Engine - identifies production risks."""
+﻿"""Risk Assessment Engine - identifies production risks."""
 
 
 class RiskAssessor:
@@ -34,7 +34,7 @@ class RiskAssessor:
                 "id": "small_dimensions",
                 "severity": "high" if (width < 200 or height < 200) else "medium",
                 "title": "Small Image Dimensions",
-                "description": f"Image is only {width}×{height}px.",
+                "description": f"Image is only {width}Ã—{height}px.",
                 "impact": "Enlargement will cause quality loss.",
                 "recommendation": "Use AI upscaling to increase dimensions before production.",
             })

@@ -1,4 +1,4 @@
-"""Production Analysis Engine - evaluates print readiness and production quality."""
+﻿"""Production Analysis Engine - evaluates print readiness and production quality."""
 
 import math
 from typing import Optional

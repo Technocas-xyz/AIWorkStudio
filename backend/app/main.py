@@ -1,4 +1,4 @@
-"""AI Work Studio - Main FastAPI Application."""
+﻿"""AI Work Studio - Main FastAPI Application."""
 
 import os
 from contextlib import asynccontextmanager
@@ -87,7 +87,7 @@ def _auto_seed_database():
     from app.models.permission import Permission
     from app.models.role_permission import RolePermission
 
-    now = datetime.now(timezone.utc)
+    now = datetime.utcnow()
 
     ROLES = [
         {"name": "super_admin", "display_name": "Super Administrator", "description": "Full system access"},
@@ -162,7 +162,7 @@ def _auto_seed_database():
         )
         session.add(admin)
         session.commit()
-        print("✓ Database auto-seeded: admin@aiworkstudio.com / Admin@123456")
+        print("âœ“ Database auto-seeded: admin@aiworkstudio.com / Admin@123456")
 
 
 app = FastAPI(

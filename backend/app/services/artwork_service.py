@@ -1,4 +1,4 @@
-"""Artwork service - handles upload, validation, metadata extraction, and DAM operations."""
+﻿"""Artwork service - handles upload, validation, metadata extraction, and DAM operations."""
 
 import hashlib
 import io
@@ -217,8 +217,8 @@ class ArtworkService:
             project_id=project_id,
             owner_id=owner_id,
             uploaded_by_id=owner_id,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         self.db.add(artwork)
         await self.db.flush()
@@ -237,8 +237,8 @@ class ArtworkService:
             width=metadata.get("width"),
             height=metadata.get("height"),
             created_by_id=owner_id,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         self.db.add(version)
 
@@ -249,8 +249,8 @@ class ArtworkService:
             user_id=owner_id,
             action="upload",
             details=json.dumps({"filename": original_filename, "size": file_size}),
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         self.db.add(activity)
 
@@ -338,7 +338,7 @@ class ArtworkService:
         for key, value in kwargs.items():
             if value is not None and hasattr(artwork, key):
                 setattr(artwork, key, value)
-        artwork.updated_at = datetime.now(timezone.utc)
+        artwork.updated_at = datetime.utcnow()
         await self.db.flush()
         await self.db.refresh(artwork)
         return artwork
@@ -356,8 +356,8 @@ class ArtworkService:
             artwork_id=artwork.id,
             user_id=user_id,
             action="delete",
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         self.db.add(activity)
         await self.db.flush()
@@ -401,12 +401,12 @@ class ArtworkService:
             height=height,
             notes=notes,
             created_by_id=user_id,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         self.db.add(version)
         artwork.current_version = new_version_num
-        artwork.updated_at = datetime.now(timezone.utc)
+        artwork.updated_at = datetime.utcnow()
 
         activity = ArtworkActivity(
             id=str(uuid.uuid4()),
@@ -414,8 +414,8 @@ class ArtworkService:
             user_id=user_id,
             action="version_create",
             details=json.dumps({"version": new_version_num}),
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         self.db.add(activity)
         await self.db.flush()

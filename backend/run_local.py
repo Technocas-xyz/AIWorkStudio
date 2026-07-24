@@ -1,4 +1,4 @@
-"""Local development runner - uses SQLite, no Docker required."""
+﻿"""Local development runner - uses SQLite, no Docker required."""
 
 import os
 import sys
@@ -31,7 +31,7 @@ def init_database():
     Base.metadata.create_all(engine)
     print("Database tables created.")
 
-    now = datetime.now(timezone.utc)
+    now = datetime.utcnow()
 
     with Session(engine) as session:
         # Check if already seeded

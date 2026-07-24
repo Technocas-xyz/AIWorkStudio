@@ -1,4 +1,4 @@
-"""Generation endpoints - AI Production Studio."""
+﻿"""Generation endpoints - AI Production Studio."""
 
 import json
 from typing import Optional

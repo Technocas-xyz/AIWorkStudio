@@ -1,4 +1,4 @@
-"""Celery application configuration."""
+﻿"""Celery application configuration."""
 
 from celery import Celery
 from app.config import get_settings

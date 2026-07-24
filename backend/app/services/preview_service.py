@@ -1,4 +1,4 @@
-"""Preview generation service for artwork thumbnails."""
+﻿"""Preview generation service for artwork thumbnails."""
 
 import io
 import os

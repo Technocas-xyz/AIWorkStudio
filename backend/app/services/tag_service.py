@@ -1,4 +1,4 @@
-"""Tag service."""
+﻿"""Tag service."""
 
 import uuid
 from datetime import datetime, timezone
@@ -27,8 +27,8 @@ class TagService:
             name=name,
             color=color,
             tag_type=tag_type,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         self.db.add(tag)
         await self.db.flush()
@@ -64,8 +64,8 @@ class TagService:
             id=str(uuid.uuid4()),
             artwork_id=artwork_id,
             tag_id=tag_id,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         self.db.add(at)
         await self.db.flush()

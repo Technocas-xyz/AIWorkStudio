@@ -1,4 +1,4 @@
-"""Recommendation Engine - generates actionable steps to make artwork production-perfect."""
+﻿"""Recommendation Engine - generates actionable steps to make artwork production-perfect."""
 
 from typing import Optional
 
@@ -25,16 +25,16 @@ class RecommendationEngine:
                 "category": "resolution",
                 "title": "Increase Resolution to 300 DPI" if dpi < 200 else "Optimize to 300 DPI",
                 "severity": "high" if is_critical else "medium",
-                "current": f"{width}×{height}px at {dpi} DPI",
-                "recommended": f"{int(target_w)}×{int(target_h)}px at 300 DPI",
+                "current": f"{width}Ã—{height}px at {dpi} DPI",
+                "recommended": f"{int(target_w)}Ã—{int(target_h)}px at 300 DPI",
                 "method": "AI Super Resolution (4x upscale)" if is_critical else "AI Super Resolution (2x upscale)",
                 "impact": "Below minimum 200 DPI - will pixelate when printed" if is_critical else "Currently at {dpi} DPI - 300 DPI recommended for sharpest output",
                 "steps": [
                     f"Current: {dpi} DPI ({'BELOW MINIMUM 200 DPI' if is_critical else 'below recommended 300 DPI'})",
                     f"Minimum for DTF: 200 DPI | Recommended: 300 DPI",
-                    f"Apply AI super-resolution to upscale from {width}×{height} to {int(target_w)}×{int(target_h)}",
-                    f"After upscale, max print @300dpi: {target_w/300:.1f}\" × {target_h/300:.1f}\"",
-                    f"Max print @200dpi: {target_w/200:.1f}\" × {target_h/200:.1f}\"",
+                    f"Apply AI super-resolution to upscale from {width}Ã—{height} to {int(target_w)}Ã—{int(target_h)}",
+                    f"After upscale, max print @300dpi: {target_w/300:.1f}\" Ã— {target_h/300:.1f}\"",
+                    f"Max print @200dpi: {target_w/200:.1f}\" Ã— {target_h/200:.1f}\"",
                 ],
                 "auto_fixable": True,
             })
@@ -209,16 +209,16 @@ class RecommendationEngine:
                 "category": "size",
                 "title": "Increase Print Size Capability",
                 "severity": "high" if max_print_w < 4 else "medium",
-                "current": f"Max safe print: {max_print_w}\" × {max_print_h}\"",
-                "recommended": "At least 10\" × 14\" at 300 DPI for standard DTF",
+                "current": f"Max safe print: {max_print_w}\" Ã— {max_print_h}\"",
+                "recommended": "At least 10\" Ã— 14\" at 300 DPI for standard DTF",
                 "method": "AI Upscale + Enhancement",
                 "impact": "Enables printing at standard T-shirt sizes without quality loss",
                 "steps": [
-                    f"Current max print at 300 DPI: {max_print_w}\" × {max_print_h}\"",
-                    "This is too small for standard DTF front prints (10\" × 14\")",
+                    f"Current max print at 300 DPI: {max_print_w}\" Ã— {max_print_h}\"",
+                    "This is too small for standard DTF front prints (10\" Ã— 14\")",
                     "Apply 2-4x AI super-resolution",
                     "Follow with AI sharpening to restore fine details",
-                    f"Target: {max(10, max_print_w*2):.0f}\" × {max(14, max_print_h*2):.0f}\" at 300 DPI",
+                    f"Target: {max(10, max_print_w*2):.0f}\" Ã— {max(14, max_print_h*2):.0f}\" at 300 DPI",
                 ],
                 "auto_fixable": True,
             })

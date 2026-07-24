@@ -1,4 +1,4 @@
-"""Quality Assurance endpoints."""
+﻿"""Quality Assurance endpoints."""
 
 import json
 from fastapi import APIRouter, Depends, HTTPException
@@ -78,7 +78,7 @@ async def approve_qa(
     if not success:
         raise HTTPException(status_code=404, detail="Report not found")
     await AuditService(db).log(action="qa.approve", resource_type="qa", user_id=current_user.id, resource_id=report_id)
-    return APIResponse(message="QA Approved — artwork cleared for production")
+    return APIResponse(message="QA Approved â€” artwork cleared for production")
 
 
 @router.post("/{report_id}/reject", response_model=APIResponse)

@@ -1,4 +1,4 @@
-"""Base model with common fields."""
+﻿"""Base model with common fields."""
 
 import uuid
 from datetime import datetime

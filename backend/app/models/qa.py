@@ -1,4 +1,4 @@
-"""Quality Assurance models."""
+﻿"""Quality Assurance models."""
 
 import uuid
 from datetime import datetime, timezone

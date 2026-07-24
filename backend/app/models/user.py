@@ -1,4 +1,4 @@
-"""User model."""
+﻿"""User model."""
 
 from sqlalchemy import Column, String, Boolean, ForeignKey, DateTime
 from sqlalchemy.orm import relationship

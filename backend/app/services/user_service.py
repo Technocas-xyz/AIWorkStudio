@@ -1,4 +1,4 @@
-"""User service."""
+﻿"""User service."""
 
 import math
 from typing import Optional

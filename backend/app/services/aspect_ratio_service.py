@@ -1,4 +1,4 @@
-"""Centralized Aspect Ratio Service — used across the entire platform."""
+﻿"""Centralized Aspect Ratio Service â€” used across the entire platform."""
 
 import math
 from typing import Optional, Tuple

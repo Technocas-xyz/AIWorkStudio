@@ -1,4 +1,4 @@
-"""Analysis endpoints - Artwork Intelligence Engine."""
+﻿"""Analysis endpoints - Artwork Intelligence Engine."""
 
 import json
 from typing import Optional

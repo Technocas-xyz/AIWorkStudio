@@ -1,4 +1,4 @@
-"""Artwork endpoints - upload, library, versions."""
+﻿"""Artwork endpoints - upload, library, versions."""
 
 import hashlib
 import json
@@ -87,7 +87,7 @@ async def upload_artwork(
     # Store file
     ext = get_extension(original_filename)
     stored_filename = f"{uuid.uuid4()}.{ext}"
-    storage_path = f"{datetime.now(timezone.utc).strftime('%Y/%m/%d')}/{stored_filename}"
+    storage_path = f"{datetime.utcnow().strftime('%Y/%m/%d')}/{stored_filename}"
     save_file_locally("originals", storage_path, content)
 
     # Create artwork record
@@ -118,8 +118,8 @@ async def upload_artwork(
                 height=preview_data["height"],
                 storage_path=f"previews/{preview_path}",
                 file_size=len(preview_data["bytes"]),
-                created_at=datetime.now(timezone.utc),
-                updated_at=datetime.now(timezone.utc),
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow(),
             )
             db.add(preview_record)
         await db.flush()
@@ -168,7 +168,7 @@ async def bulk_upload_artworks(
 
             ext = get_extension(original_filename)
             stored_filename = f"{uuid.uuid4()}.{ext}"
-            storage_path = f"{datetime.now(timezone.utc).strftime('%Y/%m/%d')}/{stored_filename}"
+            storage_path = f"{datetime.utcnow().strftime('%Y/%m/%d')}/{stored_filename}"
             save_file_locally("originals", storage_path, content)
 
             artwork = await artwork_service.create_artwork(
@@ -197,8 +197,8 @@ async def bulk_upload_artworks(
                         height=preview_data["height"],
                         storage_path=f"previews/{preview_path}",
                         file_size=len(preview_data["bytes"]),
-                        created_at=datetime.now(timezone.utc),
-                        updated_at=datetime.now(timezone.utc),
+                        created_at=datetime.utcnow(),
+                        updated_at=datetime.utcnow(),
                     )
                     db.add(preview_record)
 

@@ -1,4 +1,4 @@
-"""Tag endpoints."""
+﻿"""Tag endpoints."""
 
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException

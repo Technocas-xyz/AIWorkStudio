@@ -1,4 +1,4 @@
-"""API router configuration."""
+﻿"""API router configuration."""
 
 from fastapi import APIRouter
 

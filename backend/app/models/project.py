@@ -1,4 +1,4 @@
-"""Project model."""
+﻿"""Project model."""
 
 from sqlalchemy import Column, String, Text, ForeignKey, Integer
 from sqlalchemy.orm import relationship

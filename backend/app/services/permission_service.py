@@ -1,4 +1,4 @@
-"""Permission service for dynamic RBAC."""
+﻿"""Permission service for dynamic RBAC."""
 
 from typing import Optional
 

@@ -1,4 +1,4 @@
-"""Settings endpoints."""
+﻿"""Settings endpoints."""
 
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession

@@ -1,4 +1,4 @@
-"""Analysis models for the Artwork Intelligence Engine."""
+﻿"""Analysis models for the Artwork Intelligence Engine."""
 
 import uuid
 from datetime import datetime, timezone

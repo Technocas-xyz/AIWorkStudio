@@ -1,4 +1,4 @@
-"""Artwork preview model."""
+﻿"""Artwork preview model."""
 
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship

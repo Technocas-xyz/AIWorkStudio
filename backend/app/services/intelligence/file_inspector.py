@@ -1,4 +1,4 @@
-"""File Inspection Engine - technical metadata extraction without visual reasoning."""
+﻿"""File Inspection Engine - technical metadata extraction without visual reasoning."""
 
 import io
 import struct

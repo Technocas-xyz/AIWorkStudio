@@ -1,4 +1,4 @@
-"""Local development configuration using SQLite."""
+﻿"""Local development configuration using SQLite."""
 
 from functools import lru_cache
 from pydantic_settings import BaseSettings

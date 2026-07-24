@@ -1,4 +1,4 @@
-"""CollectionItem junction model."""
+﻿"""CollectionItem junction model."""
 
 from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship

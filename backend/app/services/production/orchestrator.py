@@ -1,4 +1,4 @@
-"""AI Orchestrator - central coordination layer for generation pipeline."""
+﻿"""AI Orchestrator - central coordination layer for generation pipeline."""
 
 import json
 import os
@@ -65,8 +65,8 @@ class ProductionOrchestrator:
             progress=0,
             generation_plan=json.dumps(generation_plan),
             requested_by_id=user_id,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         self.db.add(job)
         await self.db.flush()
@@ -92,7 +92,7 @@ class ProductionOrchestrator:
             return None
 
         job.status = "generating"
-        job.started_at = datetime.now(timezone.utc)
+        job.started_at = datetime.utcnow()
         await self.db.flush()
 
         try:
@@ -189,8 +189,8 @@ class ProductionOrchestrator:
                     "prompt_length": len(prompt),
                     "model": job.model_name,
                 }),
-                created_at=datetime.now(timezone.utc),
-                updated_at=datetime.now(timezone.utc),
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow(),
             )
             self.db.add(candidate)
 
@@ -198,7 +198,7 @@ class ProductionOrchestrator:
             job.status = "completed"
             job.current_step = "completed"
             job.progress = 100
-            job.completed_at = datetime.now(timezone.utc)
+            job.completed_at = datetime.utcnow()
             if job.started_at:
                 job.duration_seconds = (job.completed_at - job.started_at).total_seconds()
 
@@ -243,9 +243,9 @@ class ProductionOrchestrator:
             production_score=(candidate.similarity_score + candidate.quality_score) / 2 if candidate.similarity_score and candidate.quality_score else None,
             storage_path=candidate.storage_path,
             approved_by_id=user_id,
-            approved_at=datetime.now(timezone.utc),
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            approved_at=datetime.utcnow(),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         self.db.add(master)
         await self.db.flush()

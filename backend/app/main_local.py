@@ -1,4 +1,4 @@
-"""AI Work Studio - Local development entry point (SQLite)."""
+﻿"""AI Work Studio - Local development entry point (SQLite)."""
 
 import os
 os.environ["APP_ENV"] = "local"

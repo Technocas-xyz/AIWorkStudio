@@ -1,4 +1,4 @@
-"""Visual Analysis Engine - semantic understanding of artwork content.
+﻿"""Visual Analysis Engine - semantic understanding of artwork content.
 
 In production, this would call GPT-5.5 Vision or equivalent.
 For local development, it uses heuristic analysis based on image properties.

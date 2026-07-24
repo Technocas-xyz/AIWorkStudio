@@ -1,4 +1,4 @@
-"""Reconstruction Workspace API."""
+﻿"""Reconstruction Workspace API."""
 
 import json
 import uuid
@@ -72,8 +72,8 @@ async def create_reconstruction_plan(
         target_height=artwork.height,
         target_dpi=300,
         created_by_id=current_user.id,
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow(),
     )
     db.add(plan)
     await db.flush()
@@ -138,7 +138,7 @@ async def update_reconstruction_plan(
         plan.ai_model_primary = body["ai_model_primary"]
     if "target_dpi" in body:
         plan.target_dpi = body["target_dpi"]
-    plan.updated_at = datetime.now(timezone.utc)
+    plan.updated_at = datetime.utcnow()
     await db.flush()
     return APIResponse(message="Plan updated")
 
@@ -195,7 +195,7 @@ async def approve_plan(
 
     plan.status = "approved"
     plan.approved_by_id = current_user.id
-    plan.approved_at = datetime.now(timezone.utc)
+    plan.approved_at = datetime.utcnow()
     await db.flush()
     return APIResponse(message="Plan approved - ready for AI Production")
 

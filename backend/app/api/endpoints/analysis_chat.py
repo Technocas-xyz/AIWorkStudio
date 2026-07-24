@@ -1,4 +1,4 @@
-"""Analysis Chat endpoint - chat with GPT about a specific analysis report."""
+﻿"""Analysis Chat endpoint - chat with GPT about a specific analysis report."""
 
 import json
 import os
@@ -44,13 +44,13 @@ RULES:
 
 You are a print production expert who understands:
 - DPI requirements (minimum 200, recommended 300 for DTF)
-- Halftone detection (scanned sources cause moiré)
+- Halftone detection (scanned sources cause moirÃ©)
 - Blackout areas (heavy ink usage risks on fabric)
 - Image noise and its impact on print quality
 - JPEG artifacts and why they matter for production
 - Color management, contrast, saturation
 - Edge quality, halos, fringing
-- Aspect ratios and DTF print sizing (max 20" × 28")
+- Aspect ratios and DTF print sizing (max 20" Ã— 28")
 - Background removal requirements for garment printing
 """
 

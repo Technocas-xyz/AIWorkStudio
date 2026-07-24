@@ -1,4 +1,4 @@
-"""Database seed script - creates initial roles, permissions, and admin user."""
+﻿"""Database seed script - creates initial roles, permissions, and admin user."""
 
 import uuid
 from datetime import datetime

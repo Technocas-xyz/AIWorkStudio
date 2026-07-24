@@ -1,4 +1,4 @@
-"""StorageFile model."""
+﻿"""StorageFile model."""
 
 from sqlalchemy import Column, String, BigInteger, ForeignKey, Text
 from sqlalchemy.orm import relationship

@@ -1,4 +1,4 @@
-"""Generation models for Module 4 - AI Production Studio."""
+﻿"""Generation models for Module 4 - AI Production Studio."""
 
 import uuid
 from datetime import datetime, timezone

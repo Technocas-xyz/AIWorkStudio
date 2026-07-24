@@ -1,4 +1,4 @@
-"""Project service."""
+﻿"""Project service."""
 
 import math
 from typing import Optional

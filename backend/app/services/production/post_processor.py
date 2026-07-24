@@ -1,4 +1,4 @@
-"""Image Post Processor - automated quality improvements after AI generation."""
+﻿"""Image Post Processor - automated quality improvements after AI generation."""
 
 import io
 from typing import Optional

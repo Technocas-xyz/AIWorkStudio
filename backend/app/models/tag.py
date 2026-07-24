@@ -1,4 +1,4 @@
-"""Tag model."""
+﻿"""Tag model."""
 
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship

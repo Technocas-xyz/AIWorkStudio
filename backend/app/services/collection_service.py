@@ -1,4 +1,4 @@
-"""Collection service."""
+﻿"""Collection service."""
 
 import uuid
 from datetime import datetime, timezone
@@ -21,8 +21,8 @@ class CollectionService:
             name=name,
             description=description,
             owner_id=owner_id,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         self.db.add(collection)
         await self.db.flush()
@@ -50,7 +50,7 @@ class CollectionService:
         for key, value in kwargs.items():
             if value is not None and hasattr(collection, key):
                 setattr(collection, key, value)
-        collection.updated_at = datetime.now(timezone.utc)
+        collection.updated_at = datetime.utcnow()
         await self.db.flush()
         return collection
 
@@ -78,8 +78,8 @@ class CollectionService:
             id=str(uuid.uuid4()),
             collection_id=collection_id,
             artwork_id=artwork_id,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
         )
         self.db.add(item)
 

@@ -1,4 +1,4 @@
-"""RolePermission junction model."""
+﻿"""RolePermission junction model."""
 
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship

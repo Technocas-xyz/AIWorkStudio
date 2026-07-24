@@ -1,4 +1,4 @@
-"""Project schemas."""
+﻿"""Project schemas."""
 
 from typing import Optional
 from datetime import datetime
