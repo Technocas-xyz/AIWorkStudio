@@ -144,7 +144,7 @@ services:
     ports:
       - "8098:3000"
     environment:
-      - VITE_API_URL=http://localhost:8099
+      - VITE_API_URL=
     depends_on:
       - backend
     networks:
