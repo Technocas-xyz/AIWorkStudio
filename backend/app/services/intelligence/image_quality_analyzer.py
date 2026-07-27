@@ -36,7 +36,6 @@ class ImageQualityAnalyzer:
 
         try:
             from PIL import Image, ImageStat, ImageFilter
-            import numpy as np
 
             img = Image.open(io.BytesIO(file_bytes))
 
