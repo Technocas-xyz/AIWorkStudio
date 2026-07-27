@@ -27,6 +27,8 @@ class ChatMessage(BaseModel):
     job_id: str = Field(..., description="The analysis job ID to chat about")
     message: str = Field(..., min_length=1, max_length=2000, description="User question")
     history: list = Field(default_factory=list, description="Previous messages for context")
+    file_data: Optional[str] = Field(None, description="Base64 encoded file data")
+    file_name: Optional[str] = Field(None, description="Attached file name")
 
 
 # System prompt that restricts GPT to only discuss the analysis

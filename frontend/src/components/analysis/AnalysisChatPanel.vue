@@ -16,6 +16,15 @@ const messages = ref<ChatMsg[]>([])
 const inputText = ref('')
 const isLoading = ref(false)
 const chatContainer = ref<HTMLElement | null>(null)
+const attachedFile = ref<File | null>(null)
+
+function handleFileAttach(e: Event) {
+  const input = e.target as HTMLInputElement
+  if (input.files && input.files[0]) {
+    attachedFile.value = input.files[0]
+  }
+  input.value = ''
+}
 
 // Initial greeting
 messages.value.push({
@@ -27,16 +36,33 @@ async function sendMessage() {
   const text = inputText.value.trim()
   if (!text || isLoading.value) return
 
-  messages.value.push({ role: 'user', content: text })
+  // Show user message with attachment indicator
+  const displayText = attachedFile.value ? `📎 ${attachedFile.value.name}\n${text}` : text
+  messages.value.push({ role: 'user', content: displayText })
   inputText.value = ''
   isLoading.value = true
   scrollToBottom()
+
+  // Prepare file data if attached
+  let fileData: string | null = null
+  let fileName: string | null = null
+  if (attachedFile.value) {
+    const reader = new FileReader()
+    fileData = await new Promise<string>((resolve) => {
+      reader.onload = () => resolve(reader.result as string)
+      reader.readAsDataURL(attachedFile.value!)
+    })
+    fileName = attachedFile.value.name
+    attachedFile.value = null
+  }
 
   try {
     const response = await api.post('/analysis/chat', {
       job_id: props.jobId,
       message: text,
       history: messages.value.slice(-10),
+      file_data: fileData,
+      file_name: fileName,
     })
 
     const reply = response.data.data?.reply || 'Sorry, I could not process that.'
@@ -121,7 +147,22 @@ watch(() => props.jobId, () => {
 
     <!-- Input -->
     <div class="p-3 border-t border-surface-200 dark:border-surface-800">
+      <!-- Attached file preview -->
+      <div v-if="attachedFile" class="flex items-center gap-2 mb-2 p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+        <span class="text-lg">📎</span>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-medium text-surface-700 dark:text-surface-300 truncate">{{ attachedFile.name }}</p>
+          <p class="text-[10px] text-surface-500">{{ (attachedFile.size / 1024).toFixed(1) }} KB</p>
+        </div>
+        <button @click="attachedFile = null" class="text-surface-400 hover:text-red-500 text-sm">×</button>
+      </div>
+
       <div class="flex items-center gap-2">
+        <!-- Attach button -->
+        <label class="btn-ghost p-2 cursor-pointer relative" title="Attach file">
+          📎
+          <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" accept="image/*,.pdf,.doc,.docx,.txt" @change="handleFileAttach" />
+        </label>
         <input
           v-model="inputText"
           @keydown="handleKeydown"
@@ -138,7 +179,7 @@ watch(() => props.jobId, () => {
           Send
         </button>
       </div>
-      <p class="text-[10px] text-surface-400 mt-1.5">Restricted to this artwork's analysis only. No image generation.</p>
+      <p class="text-[10px] text-surface-400 mt-1.5">Restricted to this artwork's analysis only. No image generation. Attach files for context.</p>
     </div>
   </div>
 </template>
