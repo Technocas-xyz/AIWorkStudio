@@ -134,6 +134,15 @@ async def upload_artwork(
         ip_address=request.client.host if request.client else None,
     )
 
+    # Auto-run analysis (Pillow engine - fast, no API cost)
+    try:
+        from app.services.intelligence.orchestrator import AnalysisOrchestrator
+        orchestrator = AnalysisOrchestrator(db)
+        job = await orchestrator.start_analysis(artwork.id, current_user.id, engine="pillow")
+        await orchestrator.run_analysis(job.id, engine="pillow")
+    except Exception:
+        pass  # Non-blocking - analysis failure shouldn't stop upload
+
     return APIResponse(
         message="Artwork uploaded successfully",
         data=_artwork_to_dict(artwork),

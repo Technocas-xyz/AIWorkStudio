@@ -15,6 +15,7 @@ from app.schemas.common import APIResponse
 from app.api.deps import get_current_user
 from app.models.user import User
 from app.models.analysis import AnalysisReport
+from app.models.artwork import Artwork
 
 # Load API key
 _root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -77,6 +78,19 @@ async def analysis_chat(
     # Build context from the report
     report_context = _build_report_context(report)
 
+    # Load artwork image for visual questions
+    artwork_result = await db.execute(select(Artwork).where(Artwork.id == report.artwork_id))
+    artwork = artwork_result.scalar_one_or_none()
+    artwork_image_b64 = None
+    if artwork:
+        import os as _os
+        _upload_dir = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)))), "uploads")
+        _img_path = _os.path.join(_upload_dir, artwork.storage_bucket, artwork.storage_path)
+        if _os.path.exists(_img_path):
+            import base64
+            with open(_img_path, "rb") as f:
+                artwork_image_b64 = base64.b64encode(f.read()).decode("utf-8")
+
     # Build messages
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT + "\n\n--- ANALYSIS REPORT DATA ---\n" + report_context},
@@ -87,8 +101,21 @@ async def analysis_chat(
         if msg.get("role") in ("user", "assistant"):
             messages.append({"role": msg["role"], "content": msg["content"]})
 
-    # Add current question
-    messages.append({"role": "user", "content": body.message})
+    # Build user message content (with image if available)
+    user_content = []
+    user_content.append({"type": "text", "text": body.message})
+
+    # Attach artwork image so GPT can see it
+    if artwork_image_b64:
+        ext = artwork.extension if artwork else "png"
+        mime = f"image/{ext}" if ext in ("png", "jpg", "jpeg", "webp") else "image/png"
+        user_content.append({"type": "image_url", "image_url": {"url": f"data:{mime};base64,{artwork_image_b64}", "detail": "low"}})
+
+    # Attach user's uploaded file if provided
+    if body.file_data and body.file_data.startswith("data:"):
+        user_content.append({"type": "image_url", "image_url": {"url": body.file_data, "detail": "low"}})
+
+    messages.append({"role": "user", "content": user_content})
 
     try:
         from openai import OpenAI

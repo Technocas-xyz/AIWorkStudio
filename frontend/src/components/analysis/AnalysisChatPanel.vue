@@ -29,8 +29,22 @@ function handleFileAttach(e: Event) {
 // Initial greeting
 messages.value.push({
   role: 'assistant',
-  content: `I'm your production analyst for **${props.artworkName}**. Ask me anything about this analysis — why a metric has a certain value, what it means for printing, or how to fix issues. I can only discuss this specific artwork's analysis results.`,
+  content: `I'm your production analyst for **${props.artworkName}**. I can see the artwork image and all analysis data. Ask me anything — why a metric has a certain value, what it means for printing, or how to fix issues.`,
 })
+
+const quickActions = [
+  "Is this print-ready?",
+  "How to fix DPI?",
+  "Best print method?",
+  "Why low quality score?",
+  "What needs fixing first?",
+  "Suggest improvements",
+]
+
+function askQuick(question: string) {
+  inputText.value = question
+  sendMessage()
+}
 
 async function sendMessage() {
   const text = inputText.value.trim()
@@ -142,6 +156,14 @@ watch(() => props.jobId, () => {
             <span class="w-2 h-2 bg-surface-400 rounded-full animate-bounce" style="animation-delay: 300ms"></span>
           </span>
         </div>
+      </div>
+
+      <!-- Quick actions (shown when no conversation yet) -->
+      <div v-if="messages.length <= 1 && !isLoading" class="flex flex-wrap gap-1.5 mt-2">
+        <button v-for="q in quickActions" :key="q" @click="askQuick(q)"
+          class="text-[10px] px-2.5 py-1.5 rounded-full border border-primary-200 dark:border-primary-800 text-primary-700 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors">
+          {{ q }}
+        </button>
       </div>
     </div>
 
