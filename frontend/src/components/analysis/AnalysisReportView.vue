@@ -72,11 +72,13 @@ function severityColor(sev: string): string {
       <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
         <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
           <p class="text-[10px] text-surface-500">Width</p>
-          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ artwork.width }}px</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ (artwork.width / (report.file_inspection?.dpi || 72)).toFixed(2) }}"</p>
+          <p class="text-[9px] text-surface-400">{{ artwork.width }}px</p>
         </div>
         <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
           <p class="text-[10px] text-surface-500">Height</p>
-          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ artwork.height }}px</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ (artwork.height / (report.file_inspection?.dpi || 72)).toFixed(2) }}"</p>
+          <p class="text-[9px] text-surface-400">{{ artwork.height }}px</p>
         </div>
         <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
           <p class="text-[10px] text-surface-500">Aspect Ratio</p>
@@ -333,7 +335,7 @@ function severityColor(sev: string): string {
     <div v-if="aspectRatio" class="card p-5">
       <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-1">📐 DTF Aspect Ratio Intelligence</h3>
       <div class="flex flex-wrap gap-4 text-xs text-surface-500 mb-4">
-        <span>Dimensions: <span class="font-medium text-surface-800 dark:text-surface-200">{{ artwork.width }}×{{ artwork.height }}px</span></span>
+        <span>Dimensions: <span class="font-medium text-surface-800 dark:text-surface-200">{{ (artwork.width / (report.file_inspection?.dpi || 72)).toFixed(2) }}" × {{ (artwork.height / (report.file_inspection?.dpi || 72)).toFixed(2) }}"</span> <span class="text-surface-400">({{ artwork.width }}×{{ artwork.height }}px)</span></span>
         <span>Aspect Ratio: <span class="font-mono font-bold text-surface-900 dark:text-white">{{ aspectRatio.current_ratio_display }}</span></span>
         <span>Orientation: <span class="font-medium text-surface-800 dark:text-surface-200">{{ aspectRatio.current_orientation }}</span></span>
         <span>Category: <span class="font-medium text-primary-600">{{ aspectRatio.current_category }}</span></span>
