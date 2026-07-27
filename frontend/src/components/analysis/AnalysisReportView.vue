@@ -164,6 +164,132 @@ function severityColor(sev: string): string {
       </div>
     </div>
 
+    <!-- GPT Production Intelligence (only shown when GPT analysis is available) -->
+    <div v-if="report.visual_analysis?.production_intelligence" class="card p-5">
+      <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-3">🏭 Production Intelligence (GPT)</h3>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Complexity</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ report.visual_analysis.production_intelligence.complexity_score }}/10</p>
+          <p class="text-[9px] text-surface-500">{{ report.visual_analysis.production_intelligence.complexity_reason }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">White Ink Needed</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ report.visual_analysis.production_intelligence.white_ink_percentage }}%</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Weeding Difficulty</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white capitalize">{{ report.visual_analysis.production_intelligence.weeding_difficulty }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Recommended Size</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ report.visual_analysis.production_intelligence.recommended_size_inches }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg col-span-2">
+          <p class="text-[10px] text-surface-500">Recommended Placement</p>
+          <div class="flex flex-wrap gap-1 mt-1">
+            <span v-for="p in (report.visual_analysis.production_intelligence.recommended_placement || [])" :key="p" class="text-[10px] px-1.5 py-0.5 rounded bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400">{{ p.replace('_', ' ') }}</span>
+          </div>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Target Audience</p>
+          <p class="text-xs text-surface-700 dark:text-surface-300">{{ report.visual_analysis.production_intelligence.target_audience }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
+          <p class="text-[10px] text-surface-500">Seasonal</p>
+          <p class="text-xs text-surface-700 dark:text-surface-300">{{ report.visual_analysis.production_intelligence.seasonal_relevance }}</p>
+        </div>
+      </div>
+      <div v-if="report.visual_analysis.production_intelligence.production_notes" class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg border border-blue-200 dark:border-blue-800">
+        <p class="text-[10px] font-medium text-blue-700 dark:text-blue-400 uppercase">Production Notes</p>
+        <p class="text-xs text-surface-700 dark:text-surface-300 mt-1">{{ report.visual_analysis.production_intelligence.production_notes }}</p>
+      </div>
+    </div>
+
+    <!-- OCR / Typography (GPT) -->
+    <div v-if="report.visual_analysis?.typography?.detected_text" class="card p-5">
+      <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-3">📝 Text Detection (OCR)</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <p class="text-[10px] text-surface-500 uppercase mb-1">Detected Text</p>
+          <p class="text-sm text-surface-800 dark:text-surface-200 font-mono bg-surface-50 dark:bg-surface-800 p-2 rounded">{{ report.visual_analysis.typography.detected_text || 'None' }}</p>
+        </div>
+        <div class="space-y-2">
+          <div class="flex justify-between text-xs">
+            <span class="text-surface-500">Language</span>
+            <span class="font-medium text-surface-800 dark:text-white">{{ report.visual_analysis.typography.language || '—' }}</span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-surface-500">Text Blocks</span>
+            <span class="font-medium text-surface-800 dark:text-white">{{ report.visual_analysis.typography.text_blocks }}</span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-surface-500">Font Complexity</span>
+            <span class="font-medium text-surface-800 dark:text-white capitalize">{{ report.visual_analysis.typography.font_complexity }}</span>
+          </div>
+          <div class="flex justify-between text-xs">
+            <span class="text-surface-500">Curved Text</span>
+            <span class="font-medium" :class="report.visual_analysis.typography.curved_text ? 'text-yellow-600' : 'text-green-600'">{{ report.visual_analysis.typography.curved_text ? 'Yes' : 'No' }}</span>
+          </div>
+          <div v-if="report.visual_analysis.typography.spelling_issues" class="flex justify-between text-xs">
+            <span class="text-surface-500">Spelling Issues</span>
+            <span class="font-medium text-red-600">{{ report.visual_analysis.typography.spelling_issues }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Color Analysis (GPT) -->
+    <div v-if="report.visual_analysis?.color_analysis?.dominant_colors?.length > 0 && report.visual_analysis?.color_analysis?.dominant_colors[0]?.startsWith?.('#')" class="card p-5">
+      <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-3">🎨 Color Analysis (GPT)</h3>
+      <div class="flex items-center gap-2 mb-3">
+        <div v-for="color in report.visual_analysis.color_analysis.dominant_colors" :key="color"
+          class="w-8 h-8 rounded-lg border border-surface-200 dark:border-surface-700" :style="{backgroundColor: color}" :title="color"></div>
+        <span class="text-[10px] text-surface-500 ml-2">{{ report.visual_analysis.color_analysis.color_count_estimate }} colors estimated</span>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="text-xs"><span class="text-surface-500">Complexity:</span> <span class="font-medium capitalize">{{ report.visual_analysis.color_analysis.color_complexity }}</span></div>
+        <div class="text-xs"><span class="text-surface-500">Tone:</span> <span class="font-medium capitalize">{{ report.visual_analysis.color_analysis.dominant_tone }}</span></div>
+        <div class="text-xs"><span class="text-surface-500">Monochrome:</span> <span class="font-medium">{{ report.visual_analysis.color_analysis.is_monochrome ? 'Yes' : 'No' }}</span></div>
+        <div v-if="report.visual_analysis.color_analysis.pantone_suggestions?.length" class="text-xs"><span class="text-surface-500">Pantone:</span> <span class="font-medium">{{ report.visual_analysis.color_analysis.pantone_suggestions.join(', ') }}</span></div>
+      </div>
+    </div>
+
+    <!-- Color Separation -->
+    <div v-if="report.visual_analysis?.color_separation" class="card p-5">
+      <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-3">🔬 Color Separation</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg text-center">
+          <p class="text-[10px] text-surface-500">Spot Colors</p>
+          <p class="text-sm font-bold text-surface-800 dark:text-white">{{ report.visual_analysis.color_separation.estimated_spot_colors }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg text-center">
+          <p class="text-[10px] text-surface-500">Spot Possible</p>
+          <p class="text-sm font-bold" :class="report.visual_analysis.color_separation.spot_colors_possible ? 'text-green-600' : 'text-red-500'">{{ report.visual_analysis.color_separation.spot_colors_possible ? 'Yes' : 'No' }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg text-center">
+          <p class="text-[10px] text-surface-500">CMYK Safe</p>
+          <p class="text-sm font-bold" :class="report.visual_analysis.color_separation.cmyk_suitable ? 'text-green-600' : 'text-yellow-600'">{{ report.visual_analysis.color_separation.cmyk_suitable ? 'Yes' : 'Caution' }}</p>
+        </div>
+        <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg text-center">
+          <p class="text-[10px] text-surface-500">Needs White Base</p>
+          <p class="text-sm font-bold" :class="report.visual_analysis.color_separation.needs_white_base ? 'text-yellow-600' : 'text-green-600'">{{ report.visual_analysis.color_separation.needs_white_base ? 'Yes' : 'No' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Copyright Flags -->
+    <div v-if="report.visual_analysis?.copyright_flags?.has_known_brands || report.visual_analysis?.copyright_flags?.has_known_characters" class="card p-5 border-l-4 border-red-500">
+      <h3 class="text-sm font-semibold text-red-600 mb-2">⚠️ Copyright / Trademark Warning</h3>
+      <p class="text-xs text-surface-700 dark:text-surface-300">{{ report.visual_analysis.copyright_flags.details }}</p>
+    </div>
+
+    <!-- Product Description -->
+    <div v-if="report.visual_analysis?.product_description" class="card p-5">
+      <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-2">🏷️ Auto-Generated Product Description</h3>
+      <p class="text-sm text-surface-700 dark:text-surface-300 italic">{{ report.visual_analysis.product_description }}</p>
+    </div>
+
     <!-- Decision Summary -->
     <div class="card p-5">
       <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-3">🧠 AI Decisions</h3>
