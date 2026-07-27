@@ -23,6 +23,7 @@ from app.services.intelligence.plan_builder import PlanBuilder
 from app.services.intelligence.aspect_ratio_analyzer import AspectRatioAnalyzer
 from app.services.intelligence.recommendation_engine import RecommendationEngine
 from app.services.intelligence.image_quality_analyzer import ImageQualityAnalyzer
+from app.services.intelligence.print_readiness_engine import PrintReadinessEngine
 
 
 class AnalysisOrchestrator:
@@ -42,6 +43,7 @@ class AnalysisOrchestrator:
         self.aspect_ratio_analyzer = AspectRatioAnalyzer()
         self.recommendation_engine = RecommendationEngine()
         self.image_quality_analyzer = ImageQualityAnalyzer()
+        self.print_readiness_engine = PrintReadinessEngine()
 
     async def start_analysis(self, artwork_id: str, user_id: str, engine: str = "pillow") -> AnalysisJob:
         """Create and start an analysis job."""
@@ -179,6 +181,21 @@ class AnalysisOrchestrator:
             await self.db.flush()
             image_quality = self.image_quality_analyzer.analyze(file_bytes, extension, width, height, has_alpha)
 
+            # Step 3d: Print Readiness
+            job.current_step = "print_readiness"
+            job.progress = 53
+            await self.db.flush()
+            color_complexity = visual_analysis.get("color_analysis", {}).get("color_complexity", "medium")
+            has_gradients = color_complexity in ("medium", "high")
+            print_readiness = self.print_readiness_engine.analyze(
+                width, height, dpi, has_alpha,
+                artwork.color_space or "RGB",
+                color_complexity,
+                has_gradients,
+                visual_analysis.get("artwork_type", "unknown"),
+                image_quality.get("quality_score", 50),
+            )
+
             # Step 4: Production Analysis
             job.current_step = "production_analysis"
             job.progress = 55
@@ -236,8 +253,9 @@ class AnalysisOrchestrator:
             )
 
             # Create report
-            # Attach image quality to production analysis for storage
+            # Attach image quality and print readiness to production analysis for storage
             production_analysis["image_quality"] = image_quality
+            production_analysis["print_readiness"] = print_readiness
 
             report = AnalysisReport(
                 id=str(uuid.uuid4()),

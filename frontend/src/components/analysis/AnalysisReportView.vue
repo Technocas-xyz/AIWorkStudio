@@ -302,6 +302,50 @@ function severityColor(sev: string): string {
       <p v-else class="text-xs text-green-600 mt-2">✓ No quality issues detected — image is production-ready.</p>
     </div>
 
+    <!-- Print Readiness -->
+    <div v-if="report.production_analysis?.print_readiness" class="card p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-sm font-semibold text-surface-900 dark:text-white">🖨️ Print Readiness</h3>
+        <span class="text-xs text-surface-500">
+          {{ report.production_analysis.print_readiness.summary?.ready_count }}/{{ report.production_analysis.print_readiness.summary?.total_methods }} methods ready
+          · Best: <span class="font-medium text-green-600">{{ report.production_analysis.print_readiness.summary?.best_method }}</span>
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div v-for="(method, key) in report.production_analysis.print_readiness.print_methods" :key="key"
+          :class="['p-3 rounded-lg border', method.ready ? 'border-green-200 bg-green-50 dark:bg-green-900/10 dark:border-green-800' : method.status === 'needs_work' ? 'border-yellow-200 bg-yellow-50 dark:bg-yellow-900/10 dark:border-yellow-800' : 'border-red-200 bg-red-50 dark:bg-red-900/10 dark:border-red-800']">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-semibold text-surface-800 dark:text-surface-200">{{ method.method_name }}</span>
+            <span :class="['text-[10px] font-bold px-1.5 py-0.5 rounded', method.ready ? 'bg-green-200 text-green-800' : method.status === 'needs_work' ? 'bg-yellow-200 text-yellow-800' : 'bg-red-200 text-red-800']">
+              {{ method.ready ? '✓ READY' : method.status === 'needs_work' ? '⚠ FIXABLE' : '✗ N/A' }}
+            </span>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <div class="flex-1 h-1.5 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+              <div :class="['h-full rounded-full', method.score >= 80 ? 'bg-green-500' : method.score >= 50 ? 'bg-yellow-500' : 'bg-red-500']" :style="{width: method.score + '%'}"></div>
+            </div>
+            <span class="text-[10px] font-medium text-surface-600">{{ method.score }}%</span>
+          </div>
+
+          <!-- Issues -->
+          <div v-if="method.issues.length > 0" class="space-y-0.5 mb-2">
+            <p v-for="(issue, i) in method.issues" :key="i" class="text-[10px] text-red-600 dark:text-red-400">✗ {{ issue }}</p>
+          </div>
+
+          <!-- Fixes -->
+          <div v-if="method.fixes.length > 0" class="space-y-0.5">
+            <p v-for="(fix, i) in method.fixes" :key="i" class="text-[10px] text-primary-600 dark:text-primary-400">💡 {{ fix }}</p>
+          </div>
+
+          <!-- All good -->
+          <p v-if="method.ready && method.issues.length === 0" class="text-[10px] text-green-600">✓ Ready for production</p>
+
+          <p class="text-[9px] text-surface-400 mt-1.5 italic">{{ method.notes }}</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Risk Assessment -->
     <div v-if="risks.length > 0" class="card p-5">
       <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-3">⚠️ Risk Assessment ({{ risks.length }} issues)</h3>
