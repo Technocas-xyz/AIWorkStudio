@@ -289,6 +289,27 @@ function severityColor(sev: string): string {
       <p class="text-sm text-surface-700 dark:text-surface-300 italic">{{ report.visual_analysis.product_description }}</p>
     </div>
 
+    <!-- AI Generation Prompt Preview -->
+    <div v-if="report.visual_analysis?.product_description || report.generation_plan" class="card p-5">
+      <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-2">🤖 AI Image Generation Prompt (Auto-Built)</h3>
+      <p class="text-[10px] text-surface-500 mb-2">This prompt will be sent to GPT Image when you generate the Master Artwork:</p>
+      <div class="bg-surface-50 dark:bg-surface-800 rounded-lg p-4 text-xs text-surface-700 dark:text-surface-300 space-y-2 font-mono leading-relaxed">
+        <p v-if="report.visual_analysis?.product_description"><span class="text-primary-600 font-semibold">Description:</span> {{ report.visual_analysis.product_description }}</p>
+        <p v-if="report.visual_analysis?.subjects?.length"><span class="text-primary-600 font-semibold">Elements:</span> {{ report.visual_analysis.subjects.map((s: any) => s.label).join(', ') }}</p>
+        <p v-if="report.visual_analysis?.artistic_style"><span class="text-primary-600 font-semibold">Style:</span> {{ report.visual_analysis.artistic_style }}</p>
+        <p v-if="report.visual_analysis?.typography?.detected_text"><span class="text-primary-600 font-semibold">Text to preserve:</span> "{{ report.visual_analysis.typography.detected_text }}"</p>
+        <p v-if="report.visual_analysis?.color_analysis?.dominant_colors"><span class="text-primary-600 font-semibold">Colors:</span> {{ report.visual_analysis.color_analysis.dominant_colors.join(', ') }}</p>
+        <p v-if="report.generation_plan?.needs_background_removal"><span class="text-orange-600 font-semibold">→</span> Remove background, produce transparent PNG</p>
+        <p v-if="report.generation_plan?.needs_super_resolution"><span class="text-orange-600 font-semibold">→</span> Upscale to 300 DPI for production printing</p>
+        <p v-if="report.generation_plan?.needs_edge_refinement"><span class="text-orange-600 font-semibold">→</span> Smooth and refine all edges</p>
+        <p v-if="report.generation_plan?.needs_reconstruction"><span class="text-orange-600 font-semibold">→</span> Reconstruct damaged/low-quality areas</p>
+        <p v-if="report.generation_plan?.preserve_typography"><span class="text-green-600 font-semibold">🔒</span> Preserve all typography exactly</p>
+        <p v-if="report.generation_plan?.preserve_colors"><span class="text-green-600 font-semibold">🔒</span> Maintain original color palette</p>
+        <p v-if="report.generation_plan?.preserve_composition"><span class="text-green-600 font-semibold">🔒</span> Keep composition and layout</p>
+        <p><span class="text-primary-600 font-semibold">Target:</span> {{ report.generation_plan?.target_dpi || 300 }} DPI professional DTF printing. Highest quality, no artifacts.</p>
+      </div>
+    </div>
+
     <!-- GPT Raw Data (show all GPT-specific fields not displayed elsewhere) -->
     <div v-if="report.visual_analysis?.engine_used === 'gpt'" class="card p-5">
       <details>
