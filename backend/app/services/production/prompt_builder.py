@@ -34,9 +34,34 @@ class PromptBuilder:
 
     def build_prompt(self, generation_plan: dict, mode: str = "enhancement",
                      operations: dict = None, custom_instructions: str = "",
-                     target_ratio: str = "") -> str:
-        """Build a complete prompt from a generation plan and user settings."""
+                     target_ratio: str = "", visual_analysis: dict = None) -> str:
+        """Build a complete prompt from a generation plan, user settings, and GPT analysis."""
         parts = []
+
+        # 0. Product description from GPT analysis (tells AI exactly what the design is)
+        va = visual_analysis or {}
+        if va.get("product_description"):
+            parts.append(f"This artwork is: {va['product_description']}")
+
+        # 0b. Detailed subject info from GPT
+        if va.get("subjects"):
+            subject_labels = [s.get("label", "") for s in va["subjects"] if s.get("label")]
+            if subject_labels:
+                parts.append(f"Main elements: {', '.join(subject_labels)}.")
+
+        # 0c. Style context from GPT
+        if va.get("artistic_style") and va["artistic_style"] != "unknown":
+            parts.append(f"Artistic style: {va['artistic_style']}.")
+
+        # 0d. Text preservation with actual detected text
+        if va.get("typography", {}).get("detected_text"):
+            parts.append(f"Contains text that must be preserved exactly: \"{va['typography']['detected_text']}\"")
+
+        # 0e. Color info from GPT
+        if va.get("color_analysis", {}).get("dominant_colors"):
+            colors = va["color_analysis"]["dominant_colors"]
+            if colors and isinstance(colors[0], str):
+                parts.append(f"Key colors to maintain: {', '.join(colors[:5])}.")
 
         # 1. Main operation instruction
         operation_text = self.OPERATION_TEMPLATES.get(mode, self.OPERATION_TEMPLATES["enhancement"])

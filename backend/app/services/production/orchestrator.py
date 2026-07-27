@@ -103,12 +103,21 @@ class ProductionOrchestrator:
             job.progress = 10
             await self.db.flush()
 
+            # Load visual analysis from latest report for detailed prompt
+            visual_analysis_data = {}
+            if report and report.visual_analysis:
+                try:
+                    visual_analysis_data = json.loads(report.visual_analysis)
+                except Exception:
+                    pass
+
             prompt = self.prompt_builder.build_prompt(
                 generation_plan,
                 mode=job.mode,
                 operations=operations or {},
                 custom_instructions=custom_instructions,
                 target_ratio=target_ratio,
+                visual_analysis=visual_analysis_data,
             )
             job.prompt_used = prompt
 
