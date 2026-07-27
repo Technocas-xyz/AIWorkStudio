@@ -166,8 +166,7 @@ function severityColor(sev: string): string {
 
     <!-- GPT Production Intelligence (only shown when GPT analysis is available) -->
     <div v-if="report.visual_analysis?.production_intelligence" class="card p-5">
-      <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-3">🏭 Production Intelligence (GPT)</h3>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+      <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-3">🏭 Production Intelligence (GPT)</h3>      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         <div class="p-2 bg-surface-50 dark:bg-surface-800 rounded-lg">
           <p class="text-[10px] text-surface-500">Complexity</p>
           <p class="text-sm font-bold text-surface-800 dark:text-white">{{ report.visual_analysis.production_intelligence.complexity_score }}/10</p>
@@ -288,6 +287,14 @@ function severityColor(sev: string): string {
     <div v-if="report.visual_analysis?.product_description" class="card p-5">
       <h3 class="text-sm font-semibold text-surface-900 dark:text-white mb-2">🏷️ Auto-Generated Product Description</h3>
       <p class="text-sm text-surface-700 dark:text-surface-300 italic">{{ report.visual_analysis.product_description }}</p>
+    </div>
+
+    <!-- GPT Raw Data (show all GPT-specific fields not displayed elsewhere) -->
+    <div v-if="report.visual_analysis?.engine_used === 'gpt'" class="card p-5">
+      <details>
+        <summary class="text-sm font-semibold text-surface-900 dark:text-white cursor-pointer">📊 Full GPT Analysis Data (click to expand)</summary>
+        <pre class="text-xs bg-surface-50 dark:bg-surface-800 p-4 rounded-lg overflow-auto max-h-96 font-mono text-surface-700 dark:text-surface-300 mt-3">{{ JSON.stringify(report.visual_analysis, null, 2) }}</pre>
+      </details>
     </div>
 
     <!-- Decision Summary -->

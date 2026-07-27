@@ -145,7 +145,7 @@ class GPTVisualAnalyzer:
                         ]
                     }
                 ],
-                max_completion_tokens=1500,
+                max_completion_tokens=4000,
             )
 
             # Parse the response
